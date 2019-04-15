@@ -1,5 +1,4 @@
 -----------------------------------------------------------------------------------------
---
 -- main_menu.lua
 -- Created by: Megan
 -- Date: Month Day, Year
@@ -47,7 +46,7 @@ local backgroundSoundChannel
 
 -- Creating Transition Function to Credits Page
 local function CreditsTransition( )       
-    composer.gotoScene( "credits_screen", {effect = "flipFadeOutIn", time = 500})
+    composer.gotoScene( "credits_screen", {effect = "slideUp", time = 500})
 end 
 
 -----------------------------------------------------------------------------------------
@@ -61,7 +60,7 @@ end
 
 -- Creating Transition to Instuctions Screen
 local function InstructionTransition( )
-    composer.gotoScene( "instruction_screen", {effect = "flipFadeOutIn", time = 1000})
+    composer.gotoScene( "instruction_screen", {effect = "slideUp", time = 1000})
 end    
 
 

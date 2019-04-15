@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------------------
 --
--- splash_screen.lua
+--splash_screen.lua
 -- Created by: Your Name
 -- Date: Month Day, Year
 -- Description: This is the splash screen of the game. It displays the 
@@ -22,23 +22,24 @@ local scene = composer.newScene( sceneName )
 -- LOCAL VARIABLES
 -----------------------------------------------------------------------------------------
  
--- The local variables for the rabbit
-local rabbit
-local scrollSpeedrabbit = -9
+-- The local variable for the Platelogo
+
+local Platelogo = display.newImage("Images/CompanyLogo.png", 0, 0 )
+local scrollSpeedPlatelogo = -9
 
 -- The local variables for the sound
-local lightsaberSounds = audio.loadSound( "Sounds/lightsaber-clash.wav" )
-local lightsaberSoundsChannel
-
+local CrashSound = audio.loadSound( "Sounds/CrashSound.mp3")
+local CrashSoundChannel
 --------------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 --------------------------------------------------------------------------------------------
 
--- The function that moves the rabbit across the screen
-local function moveRabbit()
-    rabbit.x = rabbit.x + scrollSpeedrabbit
+-- The function that moves the Platelogo across the screen
+local function movePlatelogo()
+    Platelogo.x = Platelogo.x + scrollSpeedPlatelogo
     -- change the transparency of the ship every time it moves so that it fades out
-    rabbit.alpha = rabbit.alpha + 0.01
+    Platelogo.alpha = Platelogo.alpha + 0.01
+
 end
 
 -- The function that will go to the main menu 
@@ -57,25 +58,28 @@ function scene:create( event )
     local sceneGroup = self.view
 
     -- set the background to be black
-    display.setDefault("background", 0, 0, 0)
+    display.setDefault( "background", 1, 1, 1  ) 
 
-    -- Insert the rabbit image
-    rabbit = display.newImageRect("Images/rabbit.png", 300, 300)
+    -- Move the plate to the middle of the screen form the top
+    transition.moveTo( Platelogo, {x = display.contentWidth/2, y = display.contentHeight/2 , time = 1500})
 
-    -- Create the rabbit to be visible
-    rabbit.alpha = 0
+    -- Set the scale of the logo
+    Platelogo:scale(0.25, 0.25)
 
-    -- set the initial x and y position of the rabbit
-    rabbit.x = 1024
-    rabbit.y = display.contentHeight/2
+    -- Create the visiblility
+    Platelogo.alpha = 1
 
-    -- Make the rabbit slowly fade out 
-     rabbit.alpha = rabbit.alpha + 0.01
+    -- set the initial x and y position of the Platelogo
+    Platelogo.x = display.contentWidth/2
+    Platelogo.y = display.contentHeight*1/10
+
+    -- Have the logo fade out 
+    transition.fadeOut( Platelogo, { time = 4500 } )
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene
-    sceneGroup:insert( rabbit )
+    sceneGroup:insert( Platelogo )
 
-end -- function scene:create( event )
+end 
 
 --------------------------------------------------------------------------------------------
 
@@ -83,7 +87,7 @@ end -- function scene:create( event )
 function scene:show( event )
 
     -- Creating a group that associates objects with the scene
-    local sceneGroup = self.view
+    local sceneGroup = self.views
 
     -----------------------------------------------------------------------------------------
 
@@ -98,10 +102,10 @@ function scene:show( event )
 
     elseif ( phase == "did" ) then
         -- start the splash screen music
-        jungleSoundsChannel = audio.play(jungleSounds )
+        CrashSoundChannel = audio.play( CrashSound )
 
-        -- Call the moveRabbit function as soon as we enter the frame.
-        Runtime:addEventListener("enterFrame", moveRabbit)
+        -- Call the movePlatelogo function as soon as we enter the frame.
+        Runtime:addEventListener("enterFrame", movePlatelogo)
 
         -- Go to the main menu screen after the given time.
         timer.performWithDelay ( 3000, gotoMainMenu)          
@@ -132,7 +136,7 @@ function scene:hide( event )
     elseif ( phase == "did" ) then
         
         -- stop the jungle sounds channel for this screen
-      audio.stop (lightsaberSoundsChannel) 
+      audio.stop (CrashSoundsChannel) 
     end
 
 end --function scene:hide( event )
