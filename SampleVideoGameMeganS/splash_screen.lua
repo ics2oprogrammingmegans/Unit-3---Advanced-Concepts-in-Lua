@@ -132,7 +132,7 @@ function scene:hide( event )
     elseif ( phase == "did" ) then
         
         -- stop the jungle sounds channel for this screen
-      audio.stop (lightsaberSoundsChannel) 
+      audio.stop(lightsaberSounds) 
     end
 
 end --function scene:hide( event )
