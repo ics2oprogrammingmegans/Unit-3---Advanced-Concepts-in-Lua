@@ -19,17 +19,22 @@ sceneName = "splash_screen"
 local scene = composer.newScene( sceneName )
 
 ----------------------------------------------------------------------------------------
+-- SOUNDS
+-----------------------------------------------------------------------------------------
+-- The local variables for the sound
+local CrashSound = audio.loadSound( "Sounds/CrashSound.mp3")
+local CrashSoundChannel
+
+----------------------------------------------------------------------------------------
 -- LOCAL VARIABLES
 -----------------------------------------------------------------------------------------
  
 -- The local variable for the Platelogo
-
-local Platelogo = display.newImage("Images/CompanyLogo.png", 50, 50 )
+local Platelogo 
 local scrollSpeedPlatelogo = -9
 
--- The local variables for the sound
-local CrashSound = audio.loadSound( "Sounds/CrashSound.mp3")
-local CrashSoundChannel
+
+
 --------------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 --------------------------------------------------------------------------------------------
@@ -59,22 +64,15 @@ function scene:create( event )
 
     -- set the background to be black
     display.setDefault( "background", 1, 1, 1  ) 
---[[
-    -- Move the plate to the middle of the screen form the top
-    transition.moveTo( Platelogo, {x = display.contentWidth/2, y = display.contentHeight/2 , time = 1500})
 
+    Platelogo = display.newImage("Images/CompanyLogo.png", 50, 50 )
     -- Set the scale of the logo
     Platelogo:scale(0.25, 0.25)
-
-    -- Create the visiblility
-    Platelogo.alpha = 1
 
     -- set the initial x and y position of the Platelogo
     Platelogo.x = display.contentWidth/2
     Platelogo.y = display.contentHeight*1/10
---]]
-    -- Have the logo fade out 
-    transition.fadeOut( Platelogo, { time = 4500 } )
+
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( Platelogo )
@@ -101,6 +99,13 @@ function scene:show( event )
     -----------------------------------------------------------------------------------------
 
     elseif ( phase == "did" ) then
+
+        -- Move the plate to the middle of the screen form the top
+        transition.moveTo( Platelogo, {x = display.contentWidth/2, y = display.contentHeight/2 , time = 1500})
+
+        -- Have the logo fade out 
+        transition.fadeOut( Platelogo, { time = 4500 } )
+        
         -- start the splash screen music
         CrashSoundChannel = audio.play( CrashSound )
 
