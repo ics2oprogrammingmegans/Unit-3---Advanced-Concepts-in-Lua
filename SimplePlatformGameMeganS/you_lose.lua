@@ -55,6 +55,10 @@ function scene:create( event )
   
 end    
 
+-- Create the sound effects
+ local YouLoseSoundChannel = audio.loadSound( "You_lose.mp3" )
+ local YouLoseSoundChannel
+
 -----------------------------------------------------------------------------------------
 -- GLOBAL SCENE FUNCTIONS
 -----------------------------------------------------------------------------------------
@@ -83,6 +87,10 @@ function scene:show( event )
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+
+        -- Added sound effect for when the you lose screen appears
+         YouLoseSoundChannel = audio.play(YouLoseSound)
+
     end
 
 end
