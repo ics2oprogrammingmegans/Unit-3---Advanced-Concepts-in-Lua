@@ -63,7 +63,7 @@ local motionx = 0
 local SPEED = 8
 local LeftSpeed = -8
 local LINEAR_VELOCITY = -100
-local GRAVITY = 7
+local GRAVITY = 9
 
 local leftW 
 local rightW
