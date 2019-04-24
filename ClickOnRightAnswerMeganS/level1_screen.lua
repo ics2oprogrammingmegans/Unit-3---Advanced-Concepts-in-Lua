@@ -83,9 +83,20 @@ local alreadyClickedAnswer = false
 
 
 -----------------------------------------------------------------------------------------
--- SOUND
+-- SOUNDS
 -----------------------------------------------------------------------------------------
 
+local CorrectSound = audio.loadSound ("Sounds/CorrectAnswer.mp3")
+local CorrectSoundChannel
+
+local WrongSound = audio.loadSound ("Sounds/WrongBuzzer.mp3")
+local WrongSoundChannel
+
+local YouWinsound = audio.loadSound ("Sounds/youWinSound.wav")
+local YouWinsoundChannel
+
+local YouLoseSound = audio.loadSound ("Sounds/Kids Booing.mp3")
+local YouLoseSoundChannel
 
 -----------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
@@ -164,29 +175,33 @@ local function RestartScene()
 
     alreadyClickedAnswer = false
     correct.isVisible = false
+    wrong.isVisible = false
 
     livesText.text = "Number of lives = " .. tostring(lives)
     numberCorrectText.text = "Number correct = " .. tostring(numberCorrect)
 
     -- if they have 0 lives, go to the You Lose screen
     if (lives == 0) then
+
         composer.gotoScene("you_lose")
+
+        YouLoseSoundChannel = audio.play(YouLoseSound)
+
+    elseif ( numberCorrect == 3) then
+
+        composer.gotoScene("you_win")
+
+        YouWinsoundChannel = audio.play(YouWinSound)
 
     else
 
         DisplayAddEquation()
         DetermineAnswers()
         DisplayAnswers()
-
+    
     end
 end
---[[
-    if ( numberCorrectText == 3) 
 
-        composer.gotoScene("you_win")
-    end
-end
---]]
 -- Functions that checks if the buttons have been clicked.
 local function TouchListenerAnswer(touch)
     -- get the user answer from the text object that was clicked on
@@ -197,8 +212,11 @@ local function TouchListenerAnswer(touch)
         alreadyClickedAnswer = true
 
         -- if the user gets the answer right, display Correct and call RestartSceneRight
-        if (answer == tonumber(userAnswer)) then     
+        if (answer == tonumber(userAnswer)) then
+
             correct.isVisible = true
+            -- add correct sound
+            CorrectSoundChannel = audio.play(CorrectSound)
             -- increase the number correct by 1
             numberCorrect = numberCorrect + 1
             -- call RestartScene after 1 second
@@ -218,6 +236,10 @@ local function TouchListenerWrongAnswer1(touch)
 
 
         if (answer ~= tonumber(userAnswer)) then
+
+            wrong.isVisible = true
+            -- add a wrong sound
+            WrongSoundChannel = audio.play(WrongSound)
             -- decrease a life
             lives = lives - 1
             -- call RestartScene after 1 second
@@ -238,6 +260,10 @@ local function TouchListenerWrongAnswer2(touch)
 
 
             if (answer ~= tonumber(userAnswer)) then
+
+                wrong.isVisible = true
+                -- add a wrong sound
+                WrongSoundChannel = audio.play(WrongSound)
                 -- decrease a life
                 lives = lives - 1
                 -- call RestartScene after 1 second
@@ -257,6 +283,10 @@ local function TouchListenerWrongAnswer3(touch)
 
 
         if (answer ~= tonumber(userAnswer)) then
+
+            wrong.isVisible = true
+            -- add a wrong sound
+            WrongSoundChannel = audio.play(WrongSound)
             -- decrease a life
             lives = lives - 1
             -- call RestartScene after 1 second
@@ -333,11 +363,11 @@ function scene:create( event )
     congratulationText.isVisible = false
 
     -- create the text object that will say Correct, set the colour and then hide it
-    correct = display.newText("Correct", display.contentWidth/2, display.contentHeight*1/3, nil, 50 )
+    correct = display.newText("Correct!", display.contentWidth/2, display.contentHeight*1/3, nil, 50 )
     correct:setTextColor(100/255, 47/255, 210/255)
     correct.isVisible = false
 
-    wrong = display.newText("Wrong", display.contentWidth/2, display.contentHeight*1/3, nil, 50 )
+    wrong = display.newText("Wrong:(", display.contentWidth/2, display.contentHeight*1/3, nil, 50 )
     wrong:setTextColor(100/255, 47/255, 210/255)
     wrong.isVisible = false
 
@@ -358,6 +388,8 @@ function scene:create( event )
     sceneGroup:insert( answerTextObject )
     sceneGroup:insert( wrongAnswer1TextObject )
     sceneGroup:insert( wrongAnswer2TextObject )
+    sceneGroup:insert( wrongAnswer3TextObject )
+    sceneGroup:insert( wrong )    
     sceneGroup:insert( congratulationText )
     sceneGroup:insert( correct )
     sceneGroup:insert( level1Text )

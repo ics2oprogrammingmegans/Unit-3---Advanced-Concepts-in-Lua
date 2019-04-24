@@ -41,7 +41,6 @@ local scrollSpeedPlatelogo = -9
 
 -- The function that moves the Platelogo across the screen
 local function movePlatelogo()
-    Platelogo.x = Platelogo.x + scrollSpeedPlatelogo
     -- change the transparency of the ship every time it moves so that it fades out
     Platelogo.alpha = Platelogo.alpha + 0.01
 
