@@ -1,68 +1,56 @@
 -----------------------------------------------------------------------------------------
 --
--- SceneTemplate.lua
--- Scene Template (Composer API)
---
+-- credits_screen.lua
+-- Created by: Daniel Lopez-Carreon
+-- Date: Nov. 24th, 2014
+-- Description: This is the you win screen
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 -- INITIALIZATIONS
 -----------------------------------------------------------------------------------------
 
--- Calling Composer Library
+-- Use Composer Library
 local composer = require( "composer" )
 
+-----------------------------------------------------------------------------------------
+
+-- Use Widget Library
 local widget = require( "widget" )
 
 -----------------------------------------------------------------------------------------
 
 -- Naming Scene
-sceneName = "you_lose"
-
------------------------------------------------------------------------------------------
+sceneName = "you_win"
 
 -- Creating Scene Object
-local scene = composer.newScene( sceneName )
+local scene = composer.newScene( sceneName ) -- This function doesn't accept a string, only a variable containing a string
 
 -----------------------------------------------------------------------------------------
--- FORWARD REFERENCES
+-- DISPLAY OBJECTS
 -----------------------------------------------------------------------------------------
+local bkg_image
 
--- local variables for the scene
-local bkg
-
-----------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------
--- LOCAL FUNCTIONS
------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------
 -- The function called when the screen doesn't exist
 function scene:create( event )
 
     -- Creating a group that associates objects with the scene
     local sceneGroup = self.view
 
-    -- Display background
-    bkg = display.newImage("Images/YouLose.png")
-    bkg.x = display.contentCenterX
-    bkg.y = display.contentCenterY
-    bkg.width = display.contentWidth
-    bkg.height = display.contentHeight
-   
+    -----------------------------------------------------------------------------------------
+    -- BACKGROUND AND DISPLAY OBJECTS
+    -----------------------------------------------------------------------------------------
+
+    -- Insert the background image and set it to the center of the screen
+    bkg_image = display.newImage("Images/Winscreen.png")
+    bkg_image.x = display.contentCenterX
+    bkg_image.y = display.contentCenterY
+    bkg_image.width = display.contentWidth
+    bkg_image.height = display.contentHeight
+
     -- Associating display objects with this scene 
-    sceneGroup:insert( bkg )
-  
-end    
-
--- Create the sound effects
- local YouLoseSound = audio.loadSound( "Sounds/Kids Booing.mp3" )
- local YouLoseSoundChannel
-
------------------------------------------------------------------------------------------
--- GLOBAL SCENE FUNCTIONS
------------------------------------------------------------------------------------------
-
+    sceneGroup:insert( bkg_image )
+end
 -----------------------------------------------------------------------------------------
 
 -- The function called when the scene is issued to appear on screen
@@ -83,17 +71,12 @@ function scene:show( event )
     -----------------------------------------------------------------------------------------
 
     elseif ( phase == "did" ) then
-
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
-
-        -- Added sound effect for when the you lose screen appears
-         YouLoseSoundChannel = audio.play(YouLoseSound)
-
     end
 
-end
+end -- function scene:show( event )
 
 -----------------------------------------------------------------------------------------
 
@@ -120,7 +103,7 @@ function scene:hide( event )
         -- Called immediately after scene goes off screen.
     end
 
-end
+end --function scene:hide( event )
 
 -----------------------------------------------------------------------------------------
 
@@ -136,7 +119,8 @@ function scene:destroy( event )
     -- Called prior to the removal of scene's view ("sceneGroup").
     -- Insert code here to clean up the scene.
     -- Example: remove display objects, save state, etc.
-end
+
+end --function scene:destroy( event )
 
 -----------------------------------------------------------------------------------------
 -- EVENT LISTENERS
@@ -151,4 +135,3 @@ scene:addEventListener( "destroy", scene )
 -----------------------------------------------------------------------------------------
 
 return scene
-

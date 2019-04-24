@@ -49,7 +49,6 @@ local spikes3platform
 
 local torchesAndSign
 local door
-local door
 local character
 
 local heart1
@@ -77,6 +76,19 @@ local ball3
 local theBall
 
 local questionsAnswered = 0
+
+
+-----------------------------------------------------------------------------------------
+-- SOUNDS
+-----------------------------------------------------------------------------------------
+
+-- create a pop sound  
+local popSound = audio.loadSound("Sounds/Pop.mp3")
+local popSoundChannel
+
+-- create a sound for when the character collids with the spikes
+local crashSound = audio.loadSound("Sounds/Crash.wav")
+local crashSoundChannel
 
 -----------------------------------------------------------------------------------------
 -- LOCAL SCENE FUNCTIONS
@@ -176,7 +188,7 @@ local function YouLoseTransition()
 end
 
 local function YouWinTransition()
-    composer.gotoScene( "you_lose" )
+    composer.gotoScene( "you_win" )
 end
 
 
@@ -190,14 +202,12 @@ local function onCollision( self, event )
 
     if ( event.phase == "began" ) then
 
-        --Pop sound
-        popSoundChannel = audio.play(popSound)
-
         if  (event.target.myName == "spikes1") or 
             (event.target.myName == "spikes2") or
             (event.target.myName == "spikes3") then
 
             -- add sound effect here
+            crashSoundChannel = audio.play(crashSound)
 
             -- remove runtime listeners that move the character
             RemoveArrowEventListeners()
@@ -226,6 +236,10 @@ local function onCollision( self, event )
         if  (event.target.myName == "ball1") or
             (event.target.myName == "ball2") or
             (event.target.myName == "ball3") then
+
+            -- play pop sound
+            popSoundChannel = audio.play(popSound)
+
             -- get the ball that the user hit
             theBall = event.target
 
@@ -246,6 +260,7 @@ local function onCollision( self, event )
             --check to see if the user has answered 5 questions
             if (questionsAnswered == 3) then
                 -- after getting 3 questions right, go to the you win screen
+                timer.performWithDelay(200, YouWinTransition)   
             end
         end        
 
@@ -333,6 +348,9 @@ local function RemovePhysicsBodies()
     physics.removeBody(rightW)
     physics.removeBody(topW)
     physics.removeBody(floor)
+
+    physics.removeBody(door)
+
  
 end
 
@@ -476,7 +494,7 @@ function scene:create( event )
     rArrow.y = display.contentHeight * 9.5 / 10
 
      -- Insert objects into the scene group in order to ONLY be associated with this scene
-    sceneGroup:insert( rArrow)
+    sceneGroup:insert( rArrow )
 
     --Insert the left arrow
     lArrow = display.newImageRect("Images/LeftArrowUnpressed.png", 100, 50)
@@ -484,7 +502,7 @@ function scene:create( event )
     lArrow.y = display.contentHeight * 9.5 / 10
    
     -- Insert objects into the scene group in order to ONLY be associated with this scene
-    sceneGroup:insert( lArrow)
+    sceneGroup:insert( lArrow )
 
     --Insert the left arrow
     uArrow = display.newImageRect("Images/UpArrowUnpressed.png", 50, 100)
@@ -492,7 +510,7 @@ function scene:create( event )
     uArrow.y = display.contentHeight * 8.5 / 10
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene
-    sceneGroup:insert( uArrow)
+    sceneGroup:insert( uArrow )
 
     --WALLS--
     leftW = display.newLine( 0, 0, 0, display.contentHeight)

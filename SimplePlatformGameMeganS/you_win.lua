@@ -17,7 +17,7 @@ local widget = require( "widget" )
 -----------------------------------------------------------------------------------------
 
 -- Naming Scene
-sceneName = "you_lose"
+sceneName = "you_win"
 
 -----------------------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ function scene:create( event )
     local sceneGroup = self.view
 
     -- Display background
-    bkg = display.newImage("Images/YouLose.png")
+    bkg = display.newImage("Images/YouWin.png")
     bkg.x = display.contentCenterX
     bkg.y = display.contentCenterY
     bkg.width = display.contentWidth
@@ -56,8 +56,8 @@ function scene:create( event )
 end    
 
 -- Create the sound effects
- local YouLoseSound = audio.loadSound( "Sounds/Kids Booing.mp3" )
- local YouLoseSoundChannel
+ local YouWinSound = audio.loadSound( "Sounds/Cheer.m4a" )
+ local YouWinSoundChannel
 
 -----------------------------------------------------------------------------------------
 -- GLOBAL SCENE FUNCTIONS
@@ -89,7 +89,7 @@ function scene:show( event )
         -- Example: start timers, begin animation, play audio, etc.
 
         -- Added sound effect for when the you lose screen appears
-         YouLoseSoundChannel = audio.play(YouLoseSound)
+         YouWinSoundChannel = audio.play(YouWinSound)
 
     end
 
