@@ -27,6 +27,12 @@ sceneName = "you_win"
 local scene = composer.newScene( sceneName ) -- This function doesn't accept a string, only a variable containing a string
 
 -----------------------------------------------------------------------------------------
+-- SOUNDS
+-----------------------------------------------------------------------------------------
+local youWinSound = audio.loadSound("Sounds/Cheer.m4a")
+local youWinSoundChannel 
+
+-----------------------------------------------------------------------------------------
 -- DISPLAY OBJECTS
 -----------------------------------------------------------------------------------------
 local bkg_image
@@ -74,6 +80,7 @@ function scene:show( event )
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+        youWinSoundChannel = audio.play(youWinSound)
     end
 
 end -- function scene:show( event )

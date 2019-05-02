@@ -36,6 +36,30 @@ local startButton
 local creditsButton
 local instructionButton
 
+-- Animation for the main menu screen
+
+local Car 
+
+-- The variables for the trees
+local Tree_1
+local Tree_2
+
+-- The variables for the rocks
+local Rock_1
+local Rock_2
+local Rock_3
+
+-- The variables for the yellow dashes 
+local yellowDash_1
+local yellowDash_2
+local yellowDash_3
+local yellowDash_4
+
+-- The variables for the clouds
+local big_Cloud
+local small_Cloud
+
+
 -- Create the sounds for the background music of the game
 local backgroundSound = audio.loadSound("Sounds/backgroundMusic.mp3")
 local backgroundSoundChannel
@@ -79,13 +103,15 @@ function scene:create( event )
     -----------------------------------------------------------------------------------------
 
     -- Insert the background image and set it to the center of the screen
-    bkg_image = display.newImage("Images/main_menu.png")
+    bkg_image = display.newImage("Images/MainMenuMeganS.png")
     bkg_image.x = display.contentCenterX
     bkg_image.y = display.contentCenterY
     bkg_image.width = display.contentWidth
     bkg_image.height = display.contentHeight
 
-
+    -- Insert the car 
+    Car = display.newImage("Images/MainMenu_Car.png")
+    Car.x = display.contentHeight*9/10
     -- Associating display objects with this scene 
     sceneGroup:insert( bkg_image )
 

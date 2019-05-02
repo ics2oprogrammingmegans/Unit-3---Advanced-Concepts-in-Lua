@@ -72,10 +72,17 @@ local userAnswerBoxPlaceholder
 
 -- create the amount of lives so that if the user gets 2 wrong it will transistion to You Lose Screen
 local livesCount = 2
+local Score = 0
 
 -- sound effects
-local correctSound
-local booSound
+local correctSound = audio.loadSound("Sounds/Correct.wav")
+local correctSoundChannel
+
+local incorrectSound = audio.loadSound("Sounds/WrongBuzzer.mp3")
+local incorrectSoundChannel
+
+local backgroundSound = audio.loadSound("Sounds/BackGroundSound.mp3")
+local backgroundSoundChannel
 
 -----------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
@@ -110,15 +117,15 @@ local function DetermineAlternateAnswers()
 
         
     -- generate incorrect answer and set it in the textbox
-    alternateAnswer1 = correctAnswer + math.random(3, 5)
+    alternateAnswer1 = correctAnswer + math.random(7, 9)
     alternateAnswerBox1.text = alternateAnswer1
 
     -- generate incorrect answer and set it in the textbox
-    alternateAnswer2 = correctAnswer - math.random(1, 2)
+    alternateAnswer2 = correctAnswer - math.random(13, 15)
     alternateAnswerBox2.text = alternateAnswer2
 
     -- generate incorrect answer and set it in the textbox
-    alternateAnswer3 = correctAnswer - math.random(5, 7)
+    alternateAnswer3 = correctAnswer - math.random(4, 6)
     alternateAnswerBox3.text = alternateAnswer3
 
 -------------------------------------------------------------------------------------------
@@ -200,7 +207,7 @@ local function PositionAnswers()
         answerboxPreviousY = answerbox.y 
     end
 end
-
+--[[
 local function CheckScore()
 
     if (questionsAnswered == 3) then
@@ -213,6 +220,7 @@ local function CheckScore()
         end
     end
 end
+--]]
 
 -- Transitioning Function to YouWin screen
 local function YouWinTransitionLevel1( )
@@ -231,23 +239,25 @@ local function RestartLevel1()
     PositionAnswers()    
 end
 
--- Function to Check User Input
+
 local function CheckUserAnswerInput()
 
-    if (questionsAnswered == 3) then
-        -- after getting 3 questions right, go to the you win screen
-        timer.performWithDelay(200, YouWinTransition)
+    if (Score == 3) then
 
-        elseif (livesCount == 0)
-            -- if the user gets 2 questions wrong, it will go to the you lose screen
-            timer.performWithDelay(200, YouLoseTransition)
-          
-            else
-                timer.performWithDelay(1600, RestartLevel1) 
-            end
+        YouWinTransitionLevel1()
+
+    if (livesCount == 0) then
+
+        YouLoseTransitionLevel1()
+
+        else 
+            timer.performWithDelay(1600, RestartLevel1) 
+        
         end
     end
 end
+
+ 
 
 local function TouchListenerAnswerbox(touch)
     --only work if none of the other boxes have been touched
@@ -282,9 +292,14 @@ local function TouchListenerAnswerbox(touch)
                 answerbox.y = userAnswerBoxPlaceholder.y
                 userAnswer = correctAnswer
 
+                -- add a score to keep count how many answer the user gets right
+                Score = Score + 1
+
+                -- play correct sound when the user gets the answer right
+                correctSoundChannel = audio.play(correctSound)
+
                 -- call the function to check if the user's input is correct or not
                 CheckUserAnswerInput()
-                CheckScore()
 
             --else make box go back to where it was
             else
@@ -323,11 +338,15 @@ local function TouchListenerAnswerBox1(touch)
                 alternateAnswerBox1.y = userAnswerBoxPlaceholder.y
 
                 userAnswer = alternateAnswer1
+
+                -- lose a life to keep track how many t=answers the user gets wrong
                 livesCount = livesCount - 1
+
+                -- play incorrect sound
+                incorrectSoundChannel = audio.play(incorrectSound)
 
                 -- call the function to check if the user's input is correct or not
                 CheckUserAnswerInput()
-                CheckScore()
             --else make box go back to where it was
             else
                 alternateAnswerBox1.x = alternateAnswerBox1PreviousX
@@ -363,11 +382,18 @@ local function TouchListenerAnswerBox2(touch)
 
                 alternateAnswerBox2.x = userAnswerBoxPlaceholder.x
                 alternateAnswerBox2.y = userAnswerBoxPlaceholder.y
+
                 userAnswer = alternateAnswer2
+
+                -- lose a life to keep track how many answers the user gets wrong
+                livesCount = livesCount - 1
+
+                -- play incorrect sound
+                incorrectSoundChannel = audio.play(incorrectSound)
 
                 -- call the function to check if the user's input is correct or not
                 CheckUserAnswerInput()
-                CheckScore()
+
             --else make box go back to where it was
             else
                 alternateAnswerBox2.x = alternateAnswerBox2PreviousX
@@ -405,9 +431,15 @@ local function TouchListenerAnswerBox3(touch)
                 alternateAnswerBox3.y = userAnswerBoxPlaceholder.y
                 userAnswer = alternateAnswer3
 
+                -- the player loses a life if they get the answer the wrong answer
+                livesCount = livesCount - 1
+
+                -- play incorrect sound
+                incorrectSoundChannel = audio.play(incorrectSound)
+
                 -- call the function to check if the user's input is correct or not
                 CheckUserAnswerInput()
-                CheckScore()
+
             --else make box go back to where it was
             else
                 alternateAnswerBox3.x = alternateAnswerBox3PreviousX
@@ -461,7 +493,7 @@ function scene:create( event )
     bkg_image.height = display.contentHeight
 
     --the text that displays the question
-    questionText = display.newText( "" , 0, 0, nil, 100)
+    questionText = display.newText( "" , 0, 0, nil, 120)
     questionText.x = display.contentWidth * 0.3
     questionText.y = display.contentHeight * 0.9
 
@@ -474,12 +506,13 @@ function scene:create( event )
     answerboxAlreadyTouched = false
     alternateAnswerBox1AlreadyTouched = false
     alternateAnswerBox2AlreadyTouched = false
+    alternateAnswerBox3AlreadyTouched = false
 
     --create answerbox alternate answers and the boxes to show them
-    answerbox = display.newText("", display.contentWidth * 0.9, 0, nil, 100)
-    alternateAnswerBox1 = display.newText("", display.contentWidth * 0.9, 0, nil, 100)
-    alternateAnswerBox2 = display.newText("", display.contentWidth * 0.9, 0, nil, 100)
-    alternateAnswerBox3 = display.newText("", display.contentWidth * 0.9, 0, nil, 100)
+    answerbox = display.newText("", display.contentWidth * 0.9, 0, nil, 120)
+    alternateAnswerBox1 = display.newText("", display.contentWidth * 0.9, 0, nil, 120)
+    alternateAnswerBox2 = display.newText("", display.contentWidth * 0.9, 0, nil, 120)
+    alternateAnswerBox3 = display.newText("", display.contentWidth * 0.9, 0, nil, 120)
 
     -- set the x positions of each of the answer boxes
     answerboxPreviousX = display.contentWidth * 0.9
@@ -527,6 +560,10 @@ function scene:show( event )
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+
+        -- Play background sound
+        backgroundSoundChannel = audio.play(backgroundSound)
+
         RestartLevel1()
         AddAnswerBoxEventListeners() 
 
