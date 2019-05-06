@@ -22,6 +22,7 @@ local scene = composer.newScene( sceneName )
 -- SOUNDS
 -----------------------------------------------------------------------------------------
 -- The local variables for the sound
+
 local CrashSound = audio.loadSound( "Sounds/CrashSound.mp3")
 local CrashSoundChannel
 
@@ -33,24 +34,29 @@ local CrashSoundChannel
 local Platelogo 
 local scrollSpeedPlatelogo = -9
 
-
-
 --------------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 --------------------------------------------------------------------------------------------
 
 -- The function that moves the Platelogo across the screen
 local function movePlatelogo()
+
     -- change the transparency of the ship every time it moves so that it fades out
-    Platelogo.alpha = Platelogo.alpha + 0.01
+    Platelogo.alpha = Platelogo.alpha - 0.01
 
 end
 
 -- The function that will go to the main menu 
 local function gotoMainMenu()
+
     composer.gotoScene( "main_menu" )
+
 end
 
+local function Sound()
+
+    CrashSoundChannel = audio.play(CrashSound)
+end
 -----------------------------------------------------------------------------------------
 -- GLOBAL SCENE FUNCTIONS
 -----------------------------------------------------------------------------------------
@@ -61,14 +67,17 @@ function scene:create( event )
     -- Creating a group that associates objects with the scene
     local sceneGroup = self.view
 
-    -- set the background to be black
+    display.setStatusBar(display.HiddenStatusBar)
+
+    -- Set the background to be black
     display.setDefault( "background", 1, 1, 1  ) 
 
     Platelogo = display.newImage("Images/CompanyLogo.png", 50, 50 )
+
     -- Set the scale of the logo
     Platelogo:scale(0.25, 0.25)
 
-    -- set the initial x and y position of the Platelogo
+    -- Set the initial x and y position of the Platelogo
     Platelogo.x = display.contentWidth/2
     Platelogo.y = display.contentHeight*1/10
 
@@ -99,21 +108,19 @@ function scene:show( event )
 
     elseif ( phase == "did" ) then
 
+        
         -- Move the plate to the middle of the screen form the top
         transition.moveTo( Platelogo, {x = display.contentWidth/2, y = display.contentHeight/2 , time = 1500})
 
-        -- Have the logo fade out 
-        transition.fadeOut( Platelogo, { time = 4500 } )
-        
-        -- start the splash screen music
-        CrashSoundChannel = audio.play( CrashSound )
+        -- Make the plate logo fade out 
+        movePlatelogo()
 
-        -- Call the movePlatelogo function as soon as we enter the frame.
-        Runtime:addEventListener("enterFrame", movePlatelogo)
+        -- Play the crash sound
+        timer.performWithDelay(150, Sound)
 
         -- Go to the main menu screen after the given time.
-        timer.performWithDelay ( 3000, gotoMainMenu)          
-        
+        timer.performWithDelay ( 3000, gotoMainMenu)     
+       
     end
 
 end --function scene:show( event )
@@ -140,7 +147,7 @@ function scene:hide( event )
     elseif ( phase == "did" ) then
         
         -- stop the jungle sounds channel for this screen
-      audio.stop (CrashSoundsChannel) 
+      audio.stop(CrashSoundChannel) 
       
     end
 

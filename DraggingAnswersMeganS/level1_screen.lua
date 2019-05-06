@@ -75,8 +75,14 @@ local livesCount = 2
 local Score = 0
 
 -- sound effects
-local correctSound
-local booSound
+local correctSound = audio.loadSound("Sounds/Correct.wav")
+local correctSoundChannel
+
+local incorrectSound = audio.loadSound("Sounds/WrongBuzzer.mp3")
+local incorrectSoundChannel
+
+local backgroundSound = audio.loadSound("Sounds/BackGroundSound.mp3")
+local backgroundSoundChannel
 
 -----------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
@@ -115,11 +121,18 @@ local function DetermineAlternateAnswers()
     alternateAnswerBox1.text = alternateAnswer1
 
     -- generate incorrect answer and set it in the textbox
+
     alternateAnswer2 = correctAnswer - math.random(4, 6)
     alternateAnswerBox2.text = alternateAnswer2
 
     -- generate incorrect answer and set it in the textbox
     alternateAnswer3 = correctAnswer - math.random(1, 3)
+
+    alternateAnswer2 = correctAnswer - math.random(13, 15)
+    alternateAnswerBox2.text = alternateAnswer2
+
+    -- generate incorrect answer and set it in the textbox
+    alternateAnswer3 = correctAnswer - math.random(4, 6)
     alternateAnswerBox3.text = alternateAnswer3
 
 -------------------------------------------------------------------------------------------
@@ -202,6 +215,7 @@ local function PositionAnswers()
     end
 end
 
+
 -- Transitioning Function to YouWin screen
 local function YouWinTransitionLevel1( )
     composer.gotoScene("you_win", {effect = "fade", time = 500})
@@ -219,10 +233,11 @@ local function RestartLevel1()
     PositionAnswers()    
 end
 
--- Function to Check User Input
+
 local function CheckUserAnswerInput()
 
     if (Score == 3) then
+
         -- after getting 3 questions right, go to the you win screen
         timer.performWithDelay(200, YouWinTransition)
 
@@ -237,6 +252,22 @@ local function CheckUserAnswerInput()
     end
 end
 
+
+
+        YouWinTransitionLevel1()
+
+    if (livesCount == 0) then
+
+        YouLoseTransitionLevel1()
+
+        else 
+            timer.performWithDelay(1600, RestartLevel1) 
+        
+        end
+    end
+end
+
+ 
 
 local function TouchListenerAnswerbox(touch)
     --only work if none of the other boxes have been touched
@@ -271,6 +302,12 @@ local function TouchListenerAnswerbox(touch)
                 answerbox.y = userAnswerBoxPlaceholder.y
                 userAnswer = correctAnswer
                 Score = Score + 1
+
+                -- add a score to keep count how many answer the user gets right
+                Score = Score + 1
+
+                -- play correct sound when the user gets the answer right
+                correctSoundChannel = audio.play(correctSound)
 
                 -- call the function to check if the user's input is correct or not
                 CheckUserAnswerInput()
@@ -312,7 +349,12 @@ local function TouchListenerAnswerBox1(touch)
                 alternateAnswerBox1.y = userAnswerBoxPlaceholder.y
 
                 userAnswer = alternateAnswer1
+
+                -- lose a life to keep track how many t=answers the user gets wrong
                 livesCount = livesCount - 1
+
+                -- play incorrect sound
+                incorrectSoundChannel = audio.play(incorrectSound)
 
                 -- call the function to check if the user's input is correct or not
                 CheckUserAnswerInput()
@@ -352,8 +394,15 @@ local function TouchListenerAnswerBox2(touch)
 
                 alternateAnswerBox2.x = userAnswerBoxPlaceholder.x
                 alternateAnswerBox2.y = userAnswerBoxPlaceholder.y
+
                 userAnswer = alternateAnswer2
                 livesCount = livesCount - 1
+
+                -- lose a life to keep track how many answers the user gets wrong
+                livesCount = livesCount - 1
+
+                -- play incorrect sound
+                incorrectSoundChannel = audio.play(incorrectSound)
 
                 -- call the function to check if the user's input is correct or not
                 CheckUserAnswerInput()
@@ -395,6 +444,12 @@ local function TouchListenerAnswerBox3(touch)
                 alternateAnswerBox3.y = userAnswerBoxPlaceholder.y
                 userAnswer = alternateAnswer3
                 livesCount = livesCount - 1
+
+                -- the player loses a life if they get the answer the wrong answer
+                livesCount = livesCount - 1
+
+                -- play incorrect sound
+                incorrectSoundChannel = audio.play(incorrectSound)
 
                 -- call the function to check if the user's input is correct or not
                 CheckUserAnswerInput()
@@ -452,7 +507,7 @@ function scene:create( event )
     bkg_image.height = display.contentHeight
 
     --the text that displays the question
-    questionText = display.newText( "" , 0, 0, nil, 100)
+    questionText = display.newText( "" , 0, 0, nil, 120)
     questionText.x = display.contentWidth * 0.3
     questionText.y = display.contentHeight * 0.9
 
@@ -465,9 +520,11 @@ function scene:create( event )
     answerboxAlreadyTouched = false
     alternateAnswerBox1AlreadyTouched = false
     alternateAnswerBox2AlreadyTouched = false
+    alternateAnswerBox3AlreadyTouched = false
 
     --create answerbox alternate answers and the boxes to show them
     answerbox = display.newText("", display.contentWidth * 0.9, 0, nil, 100)
+
     alternateAnswerBox1 = display.newText("", display.contentWidth * 0.9, 0, nil, 120)
     alternateAnswerBox2 = display.newText("", display.contentWidth * 0.9, 0, nil, 120)
     alternateAnswerBox3 = display.newText("", display.contentWidth * 0.9, 0, nil, 120)
@@ -518,6 +575,10 @@ function scene:show( event )
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+
+        -- Play background sound
+        backgroundSoundChannel = audio.play(backgroundSound)
+
         RestartLevel1()
         AddAnswerBoxEventListeners() 
 

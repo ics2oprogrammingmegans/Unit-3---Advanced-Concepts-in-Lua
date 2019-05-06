@@ -26,6 +26,15 @@ sceneName = "you_lose"
 -- Creating Scene Object
 local scene = composer.newScene( sceneName ) -- This function doesn't accept a string, only a variable containing a string
 
+
+
+-----------------------------------------------------------------------------------------
+-- SOUNDS
+-----------------------------------------------------------------------------------------
+
+local booSound = audio.loadSound("Sounds/boo.mp3")
+local booSoundChannel
+
 -----------------------------------------------------------------------------------------
 -- DISPLAY OBJECTS
 -----------------------------------------------------------------------------------------
@@ -74,6 +83,9 @@ function scene:show( event )
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+
+        -- play the boo sound
+        booSoundChannel = audio.play(booSound)
     end
 
 end -- function scene:show( event )
