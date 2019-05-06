@@ -59,10 +59,26 @@ local yellowDash_4
 local big_Cloud
 local small_Cloud
 
+-- The variables for the Mute and Unmute buttons
+local MuteButton
+local UnmuteButton
 
--- Create the sounds for the background music of the game
-local backgroundSound = audio.loadSound("Sounds/backgroundMusic.mp3")
+-- Create a local variable for the cloud
+local Cloud
+
+-- Create a local variable for the sun
+local Sun
+-----------------------------------------------------------------------------------------
+-- SOUNDS
+-----------------------------------------------------------------------------------------
+
+local backgroundSound = audio.loadSound("Sounds/Race-track.wav")
 local backgroundSoundChannel
+
+-----------------------------------------------------------------------------------------
+-- GLOBAL VARIABLES
+-----------------------------------------------------------------------------------------
+soundOn = true
 
 -----------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
@@ -87,7 +103,31 @@ local function InstructionTransition( )
     composer.gotoScene( "instruction_screen", {effect = "slideUp", time = 1000})
 end    
 
+local function Mute( touch )
+    if (touch.phase == "ended") then
+        -- pause the sound
+        audio.pause(backgroundSound)
+        -- set the boolean variable to be false (sound is now muted)
+        soundOn = false
+        -- hide the mute button visible 
+        MuteButton.isVisible = false
+        -- make the unmute button visible
+        UnmuteButton.isVisible = true
+    end
+end
 
+local function Unmute( touch )
+    if (touch.phase == "ended") then
+        -- play the sound
+        audio.resume(backgroundSound)
+        -- set the boolean variable to be false (sound is now muted)
+        soundOn = true
+        -- hide the mute button visible 
+        MuteButton.isVisible = true
+        -- make the unmute button visible
+        Unmute.isVisible = false
+    end
+end
 -----------------------------------------------------------------------------------------
 -- GLOBAL SCENE FUNCTIONS
 -----------------------------------------------------------------------------------------
@@ -109,9 +149,27 @@ function scene:create( event )
     bkg_image.width = display.contentWidth
     bkg_image.height = display.contentHeight
 
-    -- Insert the car 
+    -- Insert the car and set the scale
     Car = display.newImage("Images/MainMenu_Car.png")
-    Car.x = display.contentHeight*9/10
+    Car.x = display.contentWidth/1.2
+    Car.y = display.contentHeight*8.7/10
+    Car:scale( 0.15, 0.15 )
+
+    -- Insert the mute/unmute
+    MuteButton = display.newImageRect("Images/MuteButton.png", 100, 100)
+    MuteButton.x = display.contentWidth*1.5/10
+    MuteButton.y = display.contentHeight*1.3/10
+    MuteButton.isVisible = true
+
+    UnmuteButton = display.newImageRect("Images/UnmuteButton.png", 200, 200)
+    UnmuteButton.x = display.contentWidth*1.5/10
+    UnmuteButton.y = display.contentHeight*1.3/10
+    UnmuteButton.isVisible = false  
+
+    Sun = display.newImageRect("Images/MainMenu_Sun.png", 500, 500)
+    Sun.x = display.contentWidth*9/10
+    Sun.y = display.contentHeight*1.3/10
+    
     -- Associating display objects with this scene 
     sceneGroup:insert( bkg_image )
 
@@ -126,36 +184,36 @@ function scene:create( event )
     startButton = widget.newButton( 
         {   
             -- Set its position on the screen relative to the screen size
-            x = display.contentWidth/2,
-            y = display.contentHeight*15/16,
+            x = display.contentWidth*1/8,
+            y = display.contentHeight*4/8,
 
             -- Insert the images here
-            defaultFile = "Images/Start Button Unpressed.png", 
-            overFile = "Images/Start Button Pressed.png", 
+            defaultFile = "Images/PlayButtonUnpressed.png", 
+            overFile = "Images/PlayButtonPressed.png", 
 
             -- When the button is released, call the Level1 screen transition function
             onRelease = Level1ScreenTransition          
         } )
     -- Set the scale for the Start button
-        startButton:scale( 1.25, 1.25 )
+        startButton:scale( 0.55, 0.55 )
     -----------------------------------------------------------------------------------------
 
     -- Creating Credits Button
     creditsButton = widget.newButton( 
         {
             -- Set its position on the screen relative to the screen size
-            x = display.contentWidth*7/8,
-            y = display.contentHeight*1/4,
+            x = display.contentWidth*1/8,
+            y = display.contentHeight*5.25/8,
 
             -- Insert the images here
-            defaultFile = "Images/Credits Button Unpressed.png",
-            overFile = "Images/Credits Button Pressed.png",
+            defaultFile = "Images/CreditsButtonUnpressed.png",
+            overFile = "Images/CreditsButtonPressed.png",
 
             -- When the button is released, call the Credits transition function
             onRelease = CreditsTransition
         } ) 
         -- Set the scale for the Credits button
-        creditsButton:scale( 1.25, 1.25 )
+        creditsButton:scale( 0.55, 0.55 )
  -----------------------------------------------------------------------------------------
    
     -- Creating the instructions button
@@ -181,7 +239,9 @@ function scene:create( event )
     sceneGroup:insert( startButton )
     sceneGroup:insert( creditsButton )
     sceneGroup:insert( instructionButton )
-    
+    sceneGroup:insert( MuteButton )
+    sceneGroup:insert( UnmuteButton )
+ 
     -- INSERT INSTRUCTIONS BUTTON INTO SCENE GROUP
 
 end -- function scene:create( event )   
@@ -205,13 +265,16 @@ function scene:show( event )
     -- Called when the scene is still off screen (but is about to come on screen).   
     if ( phase == "will" ) then
        
-        backgroundSoundChannel = audio.play(backgroundSound)  
+ --       backgroundSoundChannel = audio.play(backgroundSound)  
     -----------------------------------------------------------------------------------------
 
     -- Called when the scene is now on screen.
     -- Insert code here to make the scene come alive.
     -- Example: start timers, begin animation, play audio, etc.
     elseif ( phase == "did" ) then  
+        backgroundSoundChannel = audio.play(backgroundSound, {loops = -1})
+        MuteButton:addEventListener("touch", Mute)
+        UnmuteButton:addEventListener("touch", Unmute)
 
     end
 
@@ -240,6 +303,9 @@ function scene:hide( event )
 
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
+        MuteButton:removeEventListener("touch", Mute)
+        UnmuteButton:removeEventListener("touch", Unmute)
+
     end
 
 end -- function scene:hide( event )
