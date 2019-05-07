@@ -47,15 +47,7 @@ local Tree_2
 -- The variables for the rocks
 local Rock_1
 local Rock_2
-local Rock_3
 
--- The variables for the yellow dashes 
-local yellowDash_1
-local yellowDash_2
-
--- The variables for the clouds
-local big_Cloud
-local small_Cloud
 
 -- The variables for the Mute and Unmute buttons
 local MuteButton
@@ -101,6 +93,7 @@ local function InstructionTransition( )
     composer.gotoScene( "instruction_screen", {effect = "slideUp", time = 1000})
 end    
 
+-- Creating the mute/unmute buttons
 local function Mute( touch )
     if (touch.phase == "ended") then
         -- pause the sound
@@ -121,7 +114,7 @@ local function Unmute( touch )
         -- set the boolean variable to be false (sound is now muted)
         soundOn = true
         -- make the unmute button visible
-        Unmute.isVisible = false
+        UnmuteButton.isVisible = false
         -- hide the mute button visible 
         MuteButton.isVisible = true
 
@@ -141,6 +134,10 @@ function scene:create( event )
     -- BACKGROUND IMAGE & STATIC OBJECTS
     -----------------------------------------------------------------------------------------
 
+
+    -- Hide the status bar 
+    display.setStatusBar(display.HiddenStatusBar)
+
     -- Insert the background image and set it to the center of the screen
     bkg_image = display.newImage("Images/MainMenuMeganS.png")
     bkg_image.x = display.contentCenterX
@@ -150,44 +147,56 @@ function scene:create( event )
 
     -- Insert the car and set the scale
     Car = display.newImage("Images/MainMenu_Car.png")
-    Car.x = display.contentWidth*7.77/10
-    Car.y = display.contentHeight*8.7/10
-    Car:scale( 0.15, 0.15 )
+    Car.x = display.contentWidth*7.7/10
+    Car.y = display.contentHeight*3/10
+    Car:scale( 0.1, 0.1 )
 
     -- Insert the mute/unmute
-    MuteButton = display.newImageRect("Images/MuteButton.png", 100, 100)
-    MuteButton.x = display.contentWidth*1.5/10
-    MuteButton.y = display.contentHeight*1.3/10
+    MuteButton = display.newImageRect("Images/MuteButton.png", 80, 80)
+    MuteButton.x = display.contentWidth*1/10
+    MuteButton.y = display.contentHeight*9.3/10
     MuteButton.isVisible = true
 
-    UnmuteButton = display.newImageRect("Images/UnmuteButton.png", 200, 200)
-    UnmuteButton.x = display.contentWidth*1.5/10
-    UnmuteButton.y = display.contentHeight*1.3/10
+    UnmuteButton = display.newImageRect("Images/MainMenu_UnmuteButton.png", 80, 80)
+    UnmuteButton.x = display.contentWidth*1/10
+    UnmuteButton.y = display.contentHeight*9.3/10
     UnmuteButton.isVisible = false  
 
     Sun = display.newImageRect("Images/MainMenu_Sun.png", 1000, 1000)
     Sun.x = display.contentWidth*9.5/10
     Sun.y = display.contentHeight*2/10
 
-    yellowDash_1 = display.newImageRect("Images/MainMenu_YellowDashes.png", 1300, 1000)
-    yellowDash_1.x  = display.contentWidth*7.74/10
-    yellowDash_1.y = display.contentHeight*8.3/10
-    
-    yellowDash_2 = display.newImageRect("Images/MainMenu_YellowDashes.png", 1400, 1000)
-    yellowDash_2.x  = display.contentWidth*7.74/10
-    yellowDash_2.y = display.contentHeight*9.9/10
-
-    Tree_1 = display.newImageRect("Images/MainMenu_Tree.png", 120, 120)
+    Tree_1 = display.newImageRect("Images/MainMenu_Tree.png", 110, 110)
     Tree_1.x = display.contentWidth*5/8
     Tree_1.y = display.contentHeight*1/2
+
+    Tree_2 = display.newImageRect("Images/MainMenu_Tree2.png", 130, 130)
+    Tree_2.x = display.contentWidth*9.5/10
+    Tree_2.y = display.contentHeight*2/3
+
+    Rock_1 = display.newImageRect("Images/MainMenu_Rock.png", 90, 40)
+    Rock_1.x = display.contentWidth*6/10
+    Rock_1.y = display.contentHeight*2/3
+
+    Rock_2 = display.newImageRect("Images/MainMenu_Rock.png", 70, 40)
+    Rock_2.x = display.contentWidth*8.5/10
+    Rock_2.y = display.contentHeight*3.7/8
+
+    Cloud = display.newImageRect("Images/MainMenu_Cloud.png", 350, 200)
+    Cloud.x = 100
+    Cloud.y = 100
+
+
 
     -- Associating display objects with this scene 
     sceneGroup:insert( bkg_image )
     sceneGroup:insert( Car )
-    sceneGroup:insert( yellowDash_1 )
-    sceneGroup:insert( yellowDash_2 )
     sceneGroup:insert( Sun )
     sceneGroup:insert( Tree_1 )
+    sceneGroup:insert( Tree_2 )
+    sceneGroup:insert( Cloud )
+    sceneGroup:insert( Rock_1 )
+    sceneGroup:insert( Rock_2 )
 
     -- Send the background image to the back layer so all other objects can be on top
     bkg_image:toBack()
@@ -237,19 +246,19 @@ function scene:create( event )
         { 
             -- Set its position on the screen relative to the screen size
             x = display.contentWidth*1/8,
-            y = display.contentHeight*7.25/8,
+            y = display.contentHeight*6.5/8,
 
 
             -- Insert the images here
-            defaultFile = "Images/Instructions Button Unpressed.png",
-            overFile = "Images/Instructions Button Pressed.png",
+            defaultFile = "Images/InstructionsButtonUnpressed.png",
+            overFile = "Images/InstructionsButtonPressed.png",
 
             -- When the button is released, call the Credits transition function
             onRelease = InstructionTransition
         } ) 
     
          -- Set the scale of the instructions button
-         instructionButton:scale( 1.5, 1.5 )
+         instructionButton:scale( 0.55, 0.55 )
     -----------------------------------------------------------------------------------------
 
     -- Associating button widgets with this scene
@@ -290,9 +299,21 @@ function scene:show( event )
     -- Example: start timers, begin animation, play audio, etc.
     elseif ( phase == "did" ) then  
 
+        -- Move the cloud
+        transition.moveTo( Cloud, {x = 250, y = 100 , time = 3000})
+
+        -- Create the animation for the car, and make it grow in size
+--        transition.scaleTo( Car, { xScale=0.15, yScale=0.15, time=2000 } )
+
+        transition.moveTo( Car, {x = display.contentWidth*7.77/10, y = display.contentHeight*8.7/10 , time = 2000})
+
+        -- Play the background music
         backgroundSoundChannel = audio.play(backgroundSound, {loops = -1})
+
+        -- Add the event listeners
         MuteButton:addEventListener("touch", Mute)
         UnmuteButton:addEventListener("touch", Unmute)
+
 
     end
 
