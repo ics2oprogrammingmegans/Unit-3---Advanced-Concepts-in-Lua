@@ -52,8 +52,6 @@ local Rock_3
 -- The variables for the yellow dashes 
 local yellowDash_1
 local yellowDash_2
-local yellowDash_3
-local yellowDash_4
 
 -- The variables for the clouds
 local big_Cloud
@@ -122,10 +120,11 @@ local function Unmute( touch )
         audio.resume(backgroundSound)
         -- set the boolean variable to be false (sound is now muted)
         soundOn = true
-        -- hide the mute button visible 
-        MuteButton.isVisible = true
         -- make the unmute button visible
         Unmute.isVisible = false
+        -- hide the mute button visible 
+        MuteButton.isVisible = true
+
     end
 end
 -----------------------------------------------------------------------------------------
@@ -151,7 +150,7 @@ function scene:create( event )
 
     -- Insert the car and set the scale
     Car = display.newImage("Images/MainMenu_Car.png")
-    Car.x = display.contentWidth/1.2
+    Car.x = display.contentWidth*7.77/10
     Car.y = display.contentHeight*8.7/10
     Car:scale( 0.15, 0.15 )
 
@@ -166,12 +165,29 @@ function scene:create( event )
     UnmuteButton.y = display.contentHeight*1.3/10
     UnmuteButton.isVisible = false  
 
-    Sun = display.newImageRect("Images/MainMenu_Sun.png", 500, 500)
-    Sun.x = display.contentWidth*9/10
-    Sun.y = display.contentHeight*1.3/10
+    Sun = display.newImageRect("Images/MainMenu_Sun.png", 1000, 1000)
+    Sun.x = display.contentWidth*9.5/10
+    Sun.y = display.contentHeight*2/10
+
+    yellowDash_1 = display.newImageRect("Images/MainMenu_YellowDashes.png", 1300, 1000)
+    yellowDash_1.x  = display.contentWidth*7.74/10
+    yellowDash_1.y = display.contentHeight*8.3/10
     
+    yellowDash_2 = display.newImageRect("Images/MainMenu_YellowDashes.png", 1400, 1000)
+    yellowDash_2.x  = display.contentWidth*7.74/10
+    yellowDash_2.y = display.contentHeight*9.9/10
+
+    Tree_1 = display.newImageRect("Images/MainMenu_Tree.png", 120, 120)
+    Tree_1.x = display.contentWidth*5/8
+    Tree_1.y = display.contentHeight*1/2
+
     -- Associating display objects with this scene 
     sceneGroup:insert( bkg_image )
+    sceneGroup:insert( Car )
+    sceneGroup:insert( yellowDash_1 )
+    sceneGroup:insert( yellowDash_2 )
+    sceneGroup:insert( Sun )
+    sceneGroup:insert( Tree_1 )
 
     -- Send the background image to the back layer so all other objects can be on top
     bkg_image:toBack()
@@ -221,7 +237,8 @@ function scene:create( event )
         { 
             -- Set its position on the screen relative to the screen size
             x = display.contentWidth*1/8,
-            y = display.contentHeight*1/4,
+            y = display.contentHeight*7.25/8,
+
 
             -- Insert the images here
             defaultFile = "Images/Instructions Button Unpressed.png",
@@ -272,6 +289,7 @@ function scene:show( event )
     -- Insert code here to make the scene come alive.
     -- Example: start timers, begin animation, play audio, etc.
     elseif ( phase == "did" ) then  
+
         backgroundSoundChannel = audio.play(backgroundSound, {loops = -1})
         MuteButton:addEventListener("touch", Mute)
         UnmuteButton:addEventListener("touch", Unmute)
@@ -298,11 +316,13 @@ function scene:hide( event )
         -- Called when the scene is on screen (but is about to go off screen).
         -- Insert code here to "pause" the scene.
         -- Example: stop timers, stop animation, stop audio, etc.
+        audio.stop(backgroundSoundChannel)
 
     -----------------------------------------------------------------------------------------
 
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
+
         MuteButton:removeEventListener("touch", Mute)
         UnmuteButton:removeEventListener("touch", Unmute)
 
