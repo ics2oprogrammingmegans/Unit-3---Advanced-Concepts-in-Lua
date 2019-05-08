@@ -302,9 +302,6 @@ function scene:show( event )
         -- Move the cloud
         transition.moveTo( Cloud, {x = 250, y = 100 , time = 3000})
 
-        -- Create the animation for the car, and make it grow in size
---        transition.scaleTo( Car, { xScale=0.15, yScale=0.15, time=2000 } )
-
         transition.moveTo( Car, {x = display.contentWidth*7.77/10, y = display.contentHeight*8.7/10 , time = 2000})
 
         -- Play the background music
