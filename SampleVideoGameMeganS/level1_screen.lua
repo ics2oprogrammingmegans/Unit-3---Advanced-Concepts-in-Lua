@@ -31,6 +31,55 @@ local scene = composer.newScene( sceneName )
 -- The local variables for this scene
 local bkg_image
 
+-- Create the back button to the main menu screen
+local backButton
+
+-- Create the car
+local Car
+
+-----------------------------------------------------------------------------------------
+-- SOUNDS
+----------------------------------------------------------------------------------------- 
+
+
+-----------------------------------------------------------------------------------------
+-- LOCAL FUNCTIONS
+-----------------------------------------------------------------------------------------
+
+-- Creating Transition Function to Credits Page
+local function MainTransition( )       
+    composer.gotoScene( "main_menu", {effect = "slideUp", time = 500})
+end 
+
+-----------------------------------------------------------------------------------------
+-- BUTTON WIDGETS
+-----------------------------------------------------------------------------------------   
+
+    -- Creating Start Button
+    backButton = widget.newButton( 
+        {   
+            -- Set its position on the screen relative to the screen size
+            x = display.contentWidth*1/8,
+            y = display.contentHeight*4/8,
+
+            -- Insert the images here
+            defaultFile = "Images/BackButtonUnpressed.png", 
+            overFile = "Images/PlayButtonPressed.png", 
+
+            -- When the button is released, call the Level1 screen transition function
+            onRelease = MainTransition         
+        } )
+    -- Set the scale for the Start button
+        backButton:scale( 0.55, 0.55 )
+    -----------------------------------------------------------------------------------------
+
+
+
+    -- Associating button widgets with this scene
+    sceneGroup:insert( backButton )
+ 
+
+end -- function scene:create( event )   
 -----------------------------------------------------------------------------------------
 -- GLOBAL SCENE FUNCTIONS
 -----------------------------------------------------------------------------------------
