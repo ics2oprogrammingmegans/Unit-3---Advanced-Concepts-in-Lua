@@ -47,6 +47,16 @@ local heart5
 -- To keep track of the hearts the player has
 local numLives = 5
 
+-- Create the score
+local Score = 10
+local scoreObject
+
+-- Create the local variables for the timer
+local totalSeconds = 10
+local secondsLeft = 10
+local clockText 
+local countDownTimer
+
 -- Create the arrows for the car to move left or right
 local rArrow
 local lArrow
@@ -133,7 +143,7 @@ end
 
 
 local function ReplaceCar()
-    Car = display.newImageRect("Images/MainMenu_Car.png", 100, 150)
+    Car = display.newImageRect("Images/MainMenu_Car.png", 1000, 500)
     Car.x = display.contentWidth * 0.5 / 8
     Car.y = display.contentHeight  * 0.1 / 3
     Car.width = 75
@@ -155,7 +165,13 @@ local function ReplaceCar()
     -- add back runtime listeners
     AddRuntimeListeners()
 end
-
+--[[
+local function MakePlyonsVisible()
+    Pylon1.isVisible = true
+    Pylon2.isVisible = true
+    Pylon3.isVisible = true
+end
+--]]
 local function MakeHeartsVisible()
     heart1.isVisible = true
     heart2.isVisible = true
@@ -169,6 +185,72 @@ end
 local function MainTransition( )       
     composer.gotoScene( "main_menu", {effect = "zoomInOutFade", time = 1000})
 end 
+
+
+local function UpdateTime()
+
+    -- Decrement the number of seconds
+    secondsLeft = secondsLeft - 1
+
+    -- Display the number of seconds left in the clock object 
+    clockText.text = secondsLeft .. ""
+
+    if ( secondsLeft == 0 ) then
+        -- Reset the number of seconds left
+        secondsLeft = totalSeconds
+
+        lives = lives - 1
+
+        -- If there are no lives left, play a lose sound, show a you lose image
+        -- and cancel the timer remove the third heart by making it invisible
+
+        if (lives == 3) then
+
+            heart3.isVisible = false
+            gameOverObject.isVisible = false
+            AskQuestion()
+        end
+
+        if (lives == 2) then
+
+            heart2.isVisible = false
+            gameOverObject.isVisible = false
+            AskQuestion()
+        end
+
+        if (lives == 1 ) then
+
+            heart1.isVisible = false   
+            heart2.isVisible = false
+            heart3.isVisible = false 
+            timer.cancel(countDownTimer)
+            pointsObject.isVisible = false
+            heart2.isVisible = false
+            heart3.isVisible = false
+            gameOverSoundChannel = audio.play(gameOverSound)
+            AskQuestion()
+
+            
+
+        end
+    end
+end
+
+
+
+-- Function that calls the timer
+local function StartTimer()
+
+    -- Create a countdown timer that loops infinitely
+    countDownTimer = timer.performWithDelay( 1000, UpdateTime, 0 )
+
+    if (lives == 0) then
+    timer.cancel(countDownTimer)
+    
+    end
+end
+
+
 
 --[[
 local function onCollision( self, event )
@@ -185,79 +267,11 @@ local function onCollision( self, event )
             (event.target.myName == "Plyon2") or
             (event.target.myName == "Plyon3") then
 
+            -- get the Pylon that the user hit
+            Pylon = event.target
+
             -- add sound effect here
             crashSoundChannel = audio.play(crashSound)
-
-            -- remove runtime listeners that move the character
-            RemoveArrowEventListeners()
-            RemoveRuntimeListeners()
-
-            -- remove the character from the display
-            display.remove(character)
-
-            -- decrease number of lives
-            numLives = numLives - 1
-
-            if (numLives == 1) then
-                -- update hearts
-                heart1.isVisible = true
-                heart2.isVisible = false
-                heart3.isVisible = false 
-                heart4.isVisible = false
-                heart5.isVisible = false
-                timer.performWithDelay(200, ReplaceCharacter) 
-            end
-
-            if (numLives == 2) then 
-                -- update hearts
-                heart1.isVisible = true 
-                heart2.isVisible = true
-                heart3.isVisible = false 
-                heart4.isVisible = false
-                heart5.isVisible = false
-                timer.performWithDelay(200, ReplaceCharacter) 
-            end
-
-            if (numLives == 3) then 
-                -- update hearts
-                heart1.isVisible = true 
-                heart2.isVisible = true
-                heart3.isVisible = true
-                heart4.isVisible = false
-                heart5.isVisible = false
-                timer.performWithDelay(200, ReplaceCharacter) 
-            end
-
-            if (numLives == 4) then 
-                -- update hearts
-                heart1.isVisible = true 
-                heart2.isVisible = true
-                heart3.isVisible = true
-                heart4.isVisible = true
-                heart5.isVisible = false
-                timer.performWithDelay(200, ReplaceCharacter) 
-            end
-
-            elseif (numLives == 0) then
-                -- update hearts
-                heart1.isVisible = false
-                heart2.isVisible = false
-                heart3.isVisible = false
-                heart4.isVisible = false
-                heart5.isVisible = false
-
-                timer.performWithDelay(200, YouLoseTransition)
-            end
-        end
-
-        if  (event.target.myName == "Plyon1") or
-            (event.target.myName == "Plyon2") or
-            (event.target.myName == "Plyon3") then
-
-            -- play pop sound
-
-            -- get the ball that the user hit
-            Pylon = event.target
 
             -- stop the character from moving
             motionx = 0
@@ -265,24 +279,29 @@ local function onCollision( self, event )
             -- make the character invisible
             Car.isVisible = false
 
+            -- remove runtime listeners that move the character
+            RemoveArrowEventListeners()
+            RemoveRuntimeListeners()
+
+            -- remove the character from the display
+            display.remove(Car)
+
             -- show overlay with math question
             composer.showOverlay( "level1_question", { isModal = true, effect = "fade", time = 100})
 
             -- Increment questions answered
             questionsAnswered = questionsAnswered + 1
-        end
 
-        if (event.target.myName == "door") then
-            --check to see if the user has answered 5 questions
-            if (questionsAnswered == 3) then
+            elseif (questionsAnswered == 3) 
                 -- after getting 3 questions right, go to the you win screen
                 timer.performWithDelay(200, YouWinTransition)   
             end
+            
         end        
 
     end
 end
---]]
+
 local function AddCollisionListeners()
     -- if character collides with ball, onCollision will be called
     Plyon1.collision = onCollision
@@ -294,17 +313,25 @@ local function AddCollisionListeners()
 
 end
 
+local function RemoveCollisionListeners()
+
+    Plyon1:removeEventListener( "collision" )
+    Plyon2:removeEventListener( "collision" )
+    Plyon3:removeEventListener( "collision" )
+
+end
+--]]
 local function AddPhysicsBodies()
     --add to the physics engine
-
-    physics.addBody( Pylon1, "static", { density=1.0, friction=0.3, bounce=0.2 } )
-    physics.addBody( Pylon2, "static", { density=1.0, friction=0.3, bounce=0.2 } )
-    physics.addBody( Pylon3, "static", { density=1.0, friction=0.3, bounce=0.2 } )    
-
-    physics.addBody(leftW, "static", {density=1, friction=0.3, bounce=0.2} )
-    physics.addBody(rightW, "static", {density=1, friction=0.3, bounce=0.2} )
-    physics.addBody(topW, "static", {density=1, friction=0.3, bounce=0.2} )
-    physics.addBody(floor, "static", {density=1, friction=0.3, bounce=0.2} )
+--[[
+    physics.addBody( Pylon1, "dynamic", { density=1, friction=0.3, bounce=0.2 } )
+    physics.addBody( Pylon2, "dynamic", { density=1, friction=0.3, bounce=0.2 } )
+    physics.addBody( Pylon3, "dynamic", { density=1, friction=0.3, bounce=0.2 } )    
+--]]
+    physics.addBody( leftW, "static", {density=1, friction=0.3, bounce=0.2} )
+    physics.addBody( rightW, "static", {density=1, friction=0.3, bounce=0.2} )
+    physics.addBody( topW, "static", {density=1, friction=0.3, bounce=0.2} )
+    physics.addBody( floor, "static", {density=1, friction=0.3, bounce=0.2} )
 
 
 end
@@ -312,21 +339,21 @@ end
 
 local function RemovePhysicsBodies()
 
-    physics.removeBody(Pylon1)
-    physics.removeBody(Pylon2)
-    physics.removeBody(Pylon3)
+    physics.removeBody( Pylon1 )
+    physics.removeBody( Pylon2 )
+    physics.removeBody( Pylon3 )
 
-    physics.removeBody(leftW)
-    physics.removeBody(rightW)
-    physics.removeBody(topW)
-    physics.removeBody(floor) 
+    physics.removeBody( leftW )
+    physics.removeBody( rightW )
+    physics.removeBody( topW )
+    physics.removeBody( floor ) 
 end
 
 
 -----------------------------------------------------------------------------------------
 -- GLOBAL FUNCTIONS
 -----------------------------------------------------------------------------------------
-
+--[[
 function ResumeGame()
 
     -- make car visible again
@@ -334,13 +361,13 @@ function ResumeGame()
     
     if (questionsAnswered > 0) then
         if (Plyon ~= nil) and (Plyon.isBodyActive == true) then
-            physics.removeBody(Pylon)
+            physics.removeBody( Pylon )
             Plyon.isVisible = false
         end
     end
 
 end
-
+--]]
 
 -----------------------------------------------------------------------------------------
 -- GLOBAL SCENE FUNCTIONS
@@ -361,79 +388,88 @@ function scene:create( event )
     bkg_image.width = display.contentWidth
     bkg_image.height = display.contentHeight
 
-    -- Send the background image to the back layer so all other objects can be on top
-    bkg_image:toBack()
-
     -- Insert background image into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( bkg_image ) 
 
+    -- Create the clock text colour and text
+    clockText = display.newText("", display.contentWidth*2/10, display.contentHeight*2/10, nil, 70)
+    clockText:setTextColor(0, 0, 0)
+
+    scoreObject = display.newText("Score: " .. score, display.contentWidth*4/5, display.contentHeight*1.5/10, nil, 50 )
+    scoreObject:setTextColor(0, 0, 0)
+    scoreObject.isVisible = true
+
     -- Insert the Hearts
     heart1 = display.newImageRect("Images/heart.png", 80, 80)
-    heart1.x = 50
-    heart1.y = 50
+    heart1.x = 985
+    heart1.y = 100
     heart1.isVisible = true
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( heart1 )
 
     heart2 = display.newImageRect("Images/heart.png", 80, 80)
-    heart2.x = 130
-    heart2.y = 50
+    heart2.x = 905
+    heart2.y = 100
     heart2.isVisible = true
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( heart2 )
 
     heart3= display.newImageRect("Images/heart.png", 80, 80)
-    heart3.x = 210
-    heart3.y = 50
+    heart3.x = 825
+    heart3.y = 100
     heart3.isVisible = true
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( heart3 )
 
     heart4 = display.newImageRect("Images/heart.png", 80, 80)
-    heart4.x = 290
-    heart4.y = 50
+    heart4.x = 745
+    heart4.y = 100
     heart4.isVisible = true
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( heart4 )
 
     heart5 = display.newImageRect("Images/heart.png", 80, 80)
-    heart5.x = 370
-    heart5.y = 50
+    heart5.x = 665
+    heart5.y = 100
     heart5.isVisible = true
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene  
     sceneGroup:insert( heart5 )
-
-    Plyon1 = display.newImageRect("Images/Plyon.png", 80, 80)
+--[[
+    Plyon1 = display.newImageRect("Images/heart.png", 80, 80)
     Plyon1.x = 370
     Plyon1.y = 50
     Plyon1.isVisible = true
-    
-    -- Insert objects into the scene group in order to ONLY be associated with this scene  
-    sceneGroup:insert( Plyon )
     Plyon1.myName = "Plyon1"
+
+    -- Insert objects into the scene group in order to ONLY be associated with this scene  
+    sceneGroup:insert( Plyon1 )
+
 
     Plyon2 = display.newImageRect("Images/Plyon.png", 80, 80)
     Plyon2.x = 370
     Plyon2.y = 50
     Plyon2.isVisible = true
-    
+    Plyon2.myName = "Plyon2"
+
     -- Insert objects into the scene group in order to ONLY be associated with this scene  
     sceneGroup:insert( Plyon2 )
-    Plyon2.myName = "Plyon2"
+  
 
     Plyon3 = display.newImageRect("Images/Plyon.png", 80, 80)
     Plyon3.x = 370
     Plyon3.y = 50
     Plyon3.isVisible = true
-    
+    Plyon3.myName = "Plyon3"
+
     -- Insert objects into the scene group in order to ONLY be associated with this scene  
     sceneGroup:insert( Plyon3 )
-    Plyon3.myName = "Plyon3"
+--]]
+
 
     --Insert the right arrow
     rArrow = display.newImageRect("Images/RightArrowUnpressed.png", 100, 50)
@@ -477,6 +513,9 @@ function scene:create( event )
     
     -- Insert objects into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( floor )
+
+    -- Send the background image to the back layer so all other objects can be on top
+    bkg_image:toBack()
 
 -----------------------------------------------------------------------------------------
 -- BUTTON WIDGETS
@@ -536,6 +575,9 @@ function scene:show( event )
         numLives = 5
         questionsAnswered = 0
 
+        -- make all of the plyons visible
+--        MakePlyonsVisible()
+
         -- make all lives visible
         MakeHeartsVisible()
 
@@ -543,7 +585,7 @@ function scene:show( event )
         AddPhysicsBodies()
 
         -- add collision listeners to objects
-        AddCollisionListeners()
+--        AddCollisionListeners()
 
         -- create the character, add physics bodies and runtime listeners
         ReplaceCar()
@@ -572,7 +614,7 @@ function scene:hide( event )
 
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
-        RemoveCollisionListeners()
+--        RemoveCollisionListeners()
         RemovePhysicsBodies()
 
         physics.stop()
@@ -612,3 +654,58 @@ scene:addEventListener( "destroy", scene )
 -----------------------------------------------------------------------------------------
 
 return scene
+
+--[[
+            if (numLives == 1) then
+                -- update hearts
+                heart1.isVisible = true
+                heart2.isVisible = false
+                heart3.isVisible = false 
+                heart4.isVisible = false
+                heart5.isVisible = false
+                timer.performWithDelay(200, ReplaceCar) 
+            end
+
+            if (numLives == 2) then 
+                -- update hearts
+                heart1.isVisible = true 
+                heart2.isVisible = true
+                heart3.isVisible = false 
+                heart4.isVisible = false
+                heart5.isVisible = false
+                timer.performWithDelay(200, ReplaceCharacter) 
+            end
+
+            if (numLives == 3) then 
+                -- update hearts
+                heart1.isVisible = true 
+                heart2.isVisible = true
+                heart3.isVisible = true
+                heart4.isVisible = false
+                heart5.isVisible = false
+                timer.performWithDelay(200, ReplaceCharacter) 
+            end
+
+            if (numLives == 4) then 
+                -- update hearts
+                heart1.isVisible = true 
+                heart2.isVisible = true
+                heart3.isVisible = true
+                heart4.isVisible = true
+                heart5.isVisible = false
+                timer.performWithDelay(200, ReplaceCharacter) 
+            end
+
+            else (numLives == 0) 
+                -- update hearts
+                heart1.isVisible = false
+                heart2.isVisible = false
+                heart3.isVisible = false
+                heart4.isVisible = false
+                heart5.isVisible = false
+
+                timer.performWithDelay(200, YouLoseTransition)
+            end
+        end
+
+--]]
