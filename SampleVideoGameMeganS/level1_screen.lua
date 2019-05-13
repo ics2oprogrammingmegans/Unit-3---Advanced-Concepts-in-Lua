@@ -48,12 +48,12 @@ local heart5
 local numLives = 5
 
 -- Create the score
-local Score = 10
+local Score = 0
 local scoreObject
 
 -- Create the local variables for the timer
-local totalSeconds = 10
-local secondsLeft = 10
+local totalSeconds = 60
+local secondsLeft = 60
 local clockText 
 local countDownTimer
 
@@ -143,12 +143,6 @@ end
 
 
 local function ReplaceCar()
-    Car = display.newImageRect("Images/MainMenu_Car.png", 1000, 500)
-    Car.x = display.contentWidth * 0.5 / 8
-    Car.y = display.contentHeight  * 0.1 / 3
-    Car.width = 75
-    Car.height = 100
-    Car.myName = "Car"
 
     -- intialize horizontal movement of car
     motionx = 0
@@ -165,13 +159,13 @@ local function ReplaceCar()
     -- add back runtime listeners
     AddRuntimeListeners()
 end
---[[
+
 local function MakePlyonsVisible()
     Pylon1.isVisible = true
     Pylon2.isVisible = true
     Pylon3.isVisible = true
 end
---]]
+
 local function MakeHeartsVisible()
     heart1.isVisible = true
     heart2.isVisible = true
@@ -195,45 +189,6 @@ local function UpdateTime()
     -- Display the number of seconds left in the clock object 
     clockText.text = secondsLeft .. ""
 
-    if ( secondsLeft == 0 ) then
-        -- Reset the number of seconds left
-        secondsLeft = totalSeconds
-
-        lives = lives - 1
-
-        -- If there are no lives left, play a lose sound, show a you lose image
-        -- and cancel the timer remove the third heart by making it invisible
-
-        if (lives == 3) then
-
-            heart3.isVisible = false
-            gameOverObject.isVisible = false
-            AskQuestion()
-        end
-
-        if (lives == 2) then
-
-            heart2.isVisible = false
-            gameOverObject.isVisible = false
-            AskQuestion()
-        end
-
-        if (lives == 1 ) then
-
-            heart1.isVisible = false   
-            heart2.isVisible = false
-            heart3.isVisible = false 
-            timer.cancel(countDownTimer)
-            pointsObject.isVisible = false
-            heart2.isVisible = false
-            heart3.isVisible = false
-            gameOverSoundChannel = audio.play(gameOverSound)
-            AskQuestion()
-
-            
-
-        end
-    end
 end
 
 
@@ -251,8 +206,6 @@ local function StartTimer()
 end
 
 
-
---[[
 local function onCollision( self, event )
     -- for testing purposes
     --print( event.target )        --the first object in the collision
@@ -263,14 +216,14 @@ local function onCollision( self, event )
 
     if ( event.phase == "began" ) then
 
-        if  (event.target.myName == "Plyon1") or 
-            (event.target.myName == "Plyon2") or
-            (event.target.myName == "Plyon3") then
+        if  (event.target.myName == "Pylon1") or 
+            (event.target.myName == "Pylon2") or
+            (event.target.myName == "Pylon3") then
 
             -- get the Pylon that the user hit
             Pylon = event.target
 
-            -- add sound effect here
+                -- add sound effect here
             crashSoundChannel = audio.play(crashSound)
 
             -- stop the character from moving
@@ -291,11 +244,6 @@ local function onCollision( self, event )
 
             -- Increment questions answered
             questionsAnswered = questionsAnswered + 1
-
-            elseif (questionsAnswered == 3) 
-                -- after getting 3 questions right, go to the you win screen
-                timer.performWithDelay(200, YouWinTransition)   
-            end
             
         end        
 
@@ -322,12 +270,8 @@ local function RemoveCollisionListeners()
 end
 --]]
 local function AddPhysicsBodies()
-    --add to the physics engine
---[[
-    physics.addBody( Pylon1, "dynamic", { density=1, friction=0.3, bounce=0.2 } )
-    physics.addBody( Pylon2, "dynamic", { density=1, friction=0.3, bounce=0.2 } )
-    physics.addBody( Pylon3, "dynamic", { density=1, friction=0.3, bounce=0.2 } )    
---]]
+    --add to the physics engine 
+
     physics.addBody( leftW, "static", {density=1, friction=0.3, bounce=0.2} )
     physics.addBody( rightW, "static", {density=1, friction=0.3, bounce=0.2} )
     physics.addBody( topW, "static", {density=1, friction=0.3, bounce=0.2} )
@@ -338,11 +282,8 @@ end
 
 
 local function RemovePhysicsBodies()
-
-    physics.removeBody( Pylon1 )
-    physics.removeBody( Pylon2 )
-    physics.removeBody( Pylon3 )
-
+    
+    physics.removeBody( Car )
     physics.removeBody( leftW )
     physics.removeBody( rightW )
     physics.removeBody( topW )
@@ -353,21 +294,21 @@ end
 -----------------------------------------------------------------------------------------
 -- GLOBAL FUNCTIONS
 -----------------------------------------------------------------------------------------
---[[
+
 function ResumeGame()
 
     -- make car visible again
     Car.isVisible = true
     
     if (questionsAnswered > 0) then
-        if (Plyon ~= nil) and (Plyon.isBodyActive == true) then
+        if (Pylon ~= nil) and (Pylon.isBodyActive == true) then
             physics.removeBody( Pylon )
-            Plyon.isVisible = false
+            Pylon.isVisible = false
         end
     end
 
 end
---]]
+
 
 -----------------------------------------------------------------------------------------
 -- GLOBAL SCENE FUNCTIONS
@@ -391,13 +332,31 @@ function scene:create( event )
     -- Insert background image into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( bkg_image ) 
 
+    -- Insert the car into the level one screen
+    Car = display.newImageRect("Images/MainMenu_Car.png", 0, 0)
+    Car.x = display.contentWidth * 1/2
+    Car.y = display.contentHeight  * 0.1 / 3
+    Car.width = 200
+    Car.height = 150
+    Car.myName = "Car"
+
+    -- Insert objects into the scene group in order to ONLY be associated with this scene
+    sceneGroup:insert( Car )
+
+
     -- Create the clock text colour and text
-    clockText = display.newText("", display.contentWidth*2/10, display.contentHeight*2/10, nil, 70)
+    clockText = display.newText("Time Left:", display.contentWidth*3.3/5, display.contentHeight*2.2/10, nil, 60)
     clockText:setTextColor(0, 0, 0)
 
-    scoreObject = display.newText("Score: " .. score, display.contentWidth*4/5, display.contentHeight*1.5/10, nil, 50 )
+    -- Insert objects into the scene group in order to ONLY be associated with this scene
+    sceneGroup:insert( clockText )
+
+    scoreObject = display.newText("Score: " .. Score, display.contentWidth*4.5/5, display.contentHeight*0.4/10, nil, 50 )
     scoreObject:setTextColor(0, 0, 0)
     scoreObject.isVisible = true
+
+    -- Insert objects into the scene group in order to ONLY be associated with this scene
+    sceneGroup:insert( scoreObject )  
 
     -- Insert the Hearts
     heart1 = display.newImageRect("Images/heart.png", 80, 80)
@@ -439,37 +398,35 @@ function scene:create( event )
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene  
     sceneGroup:insert( heart5 )
---[[
-    Plyon1 = display.newImageRect("Images/heart.png", 80, 80)
-    Plyon1.x = 370
-    Plyon1.y = 50
-    Plyon1.isVisible = true
-    Plyon1.myName = "Plyon1"
+
+    Pylon1 = display.newImageRect("Images/Pylon.png", 80, 80)
+    Pylon1.x = 150
+    Pylon1.y = 650
+    Pylon1.isVisible = true
+    Pylon1.myName = "Pylon1"
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene  
-    sceneGroup:insert( Plyon1 )
+    sceneGroup:insert( Pylon1 )
 
 
-    Plyon2 = display.newImageRect("Images/Plyon.png", 80, 80)
-    Plyon2.x = 370
-    Plyon2.y = 50
-    Plyon2.isVisible = true
-    Plyon2.myName = "Plyon2"
+    Pylon2 = display.newImageRect("Images/Pylon.png", 80, 80)
+    Pylon2.x = 50
+    Pylon2.y = 400
+    Pylon2.isVisible = true
+    Pylon2.myName = "Pylon2"
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene  
-    sceneGroup:insert( Plyon2 )
+    sceneGroup:insert( Pylon2 )
   
 
-    Plyon3 = display.newImageRect("Images/Plyon.png", 80, 80)
-    Plyon3.x = 370
-    Plyon3.y = 50
-    Plyon3.isVisible = true
-    Plyon3.myName = "Plyon3"
+    Pylon3 = display.newImageRect("Images/Pylon.png", 80, 80)
+    Pylon3.x = 940
+    Pylon3.y = 500
+    Pylon3.isVisible = true
+    Pylon3.myName = "Pylon3"
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene  
-    sceneGroup:insert( Plyon3 )
---]]
-
+    sceneGroup:insert( Pylon3 )
 
     --Insert the right arrow
     rArrow = display.newImageRect("Images/RightArrowUnpressed.png", 100, 50)
@@ -526,7 +483,7 @@ function scene:create( event )
         {   
             -- Set its position on the screen relative to the screen size
             x = display.contentWidth*1/8,
-            y = display.contentHeight*7/8,
+            y = display.contentHeight*7.5/8,
 
             -- Insert the images here
             defaultFile = "Images/BackButtonUnpressed.png", 
@@ -536,8 +493,8 @@ function scene:create( event )
             onRelease = MainTransition         
         } )
     -- Set the scale for the Start button
-        backButton:scale( 0.5, 0.5 )
-    -----------------------------------------------------------------------------------------
+        backButton:scale( 0.3, 0.3 )
+    ----------------------------------------------------------------------------------------
 
     -- Associating button widgets with this scene
     sceneGroup:insert( backButton ) 
@@ -571,6 +528,12 @@ function scene:show( event )
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+
+
+        -- Start the timer
+
+        StartTimer()
+        -- Keep count of the lives and questions answered
 
         numLives = 5
         questionsAnswered = 0
@@ -707,5 +670,58 @@ return scene
                 timer.performWithDelay(200, YouLoseTransition)
             end
         end
+
+
+
+
+
+local function UpdateTime()
+
+    -- Decrement the number of seconds
+    secondsLeft = secondsLeft - 1
+
+    -- Display the number of seconds left in the clock object 
+    clockText.text = secondsLeft .. ""
+
+    if ( secondsLeft == 0 ) then
+        -- Reset the number of seconds left
+        secondsLeft = totalSeconds
+
+        lives = lives - 1
+
+        -- If there are no lives left, play a lose sound, show a you lose image
+        -- and cancel the timer remove the third heart by making it invisible
+
+        if (lives == 3) then
+
+            heart3.isVisible = false
+            gameOverObject.isVisible = false
+            AskQuestion()
+        end
+
+        if (lives == 2) then
+
+            heart2.isVisible = false
+            gameOverObject.isVisible = false
+            AskQuestion()
+        end
+
+        if (lives == 1 ) then
+
+            heart1.isVisible = false   
+            heart2.isVisible = false
+            heart3.isVisible = false 
+            timer.cancel(countDownTimer)
+            pointsObject.isVisible = false
+            heart2.isVisible = false
+            heart3.isVisible = false
+            gameOverSoundChannel = audio.play(gameOverSound)
+            AskQuestion()
+
+            
+
+        end
+    end
+end
 
 --]]
