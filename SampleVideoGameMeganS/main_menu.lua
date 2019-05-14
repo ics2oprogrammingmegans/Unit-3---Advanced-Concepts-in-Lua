@@ -217,7 +217,8 @@ function scene:create( event )
             overFile = "Images/PlayButtonPressed.png", 
 
             -- When the button is released, call the Level1 screen transition function
-            onRelease = Level1ScreenTransition          
+            onRelease = Level1ScreenTransition 
+       
         } )
     -- Set the scale for the Start button
         startButton:scale( 0.55, 0.55 )

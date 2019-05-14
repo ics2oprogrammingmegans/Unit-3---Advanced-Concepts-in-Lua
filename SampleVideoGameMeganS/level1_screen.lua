@@ -51,7 +51,7 @@ local numLives = 5
 local Score = 0
 local scoreObject
 
--- Create the local variables for the timer
+-- Create the local variables for the 
 local totalSeconds = 60
 local secondsLeft = 60
 local clockText 
@@ -81,7 +81,7 @@ local Car
 local Pylon1
 local Pylon2
 local Pylon3
-local Plyon
+local Pylon
 
 local questionsAnswered = 0
 
@@ -187,7 +187,7 @@ local function UpdateTime()
     secondsLeft = secondsLeft - 1
 
     -- Display the number of seconds left in the clock object 
-    clockText.text = secondsLeft .. ""
+    clockText.text = "Time Left:" .. secondsLeft
 
 end
 
@@ -199,7 +199,7 @@ local function StartTimer()
     -- Create a countdown timer that loops infinitely
     countDownTimer = timer.performWithDelay( 1000, UpdateTime, 0 )
 
-    if (lives == 0) then
+    if (countDownTimer == 0) then
     timer.cancel(countDownTimer)
     
     end
@@ -220,24 +220,25 @@ local function onCollision( self, event )
             (event.target.myName == "Pylon2") or
             (event.target.myName == "Pylon3") then
 
+
+            -- add sound effect here
+            crashSoundChannel = audio.play(crashSound)
+
+            -- remove runtime listeners that move the car
+            RemoveArrowEventListeners()
+            RemoveRuntimeListeners()
+
+            -- remove the car from the display
+            display.remove(Car)
+
             -- get the Pylon that the user hit
             Pylon = event.target
-
-                -- add sound effect here
-            crashSoundChannel = audio.play(crashSound)
 
             -- stop the character from moving
             motionx = 0
 
             -- make the character invisible
             Car.isVisible = false
-
-            -- remove runtime listeners that move the character
-            RemoveArrowEventListeners()
-            RemoveRuntimeListeners()
-
-            -- remove the character from the display
-            display.remove(Car)
 
             -- show overlay with math question
             composer.showOverlay( "level1_question", { isModal = true, effect = "fade", time = 100})
@@ -250,22 +251,23 @@ local function onCollision( self, event )
     end
 end
 
+
 local function AddCollisionListeners()
     -- if character collides with ball, onCollision will be called
-    Plyon1.collision = onCollision
-    Plyon1:addEventListener( "collision" )
-    Plyon2.collision = onCollision
-    Plyon2:addEventListener( "collision" )
-    Plyon3.collision = onCollision
-    Plyon3:addEventListener( "collision" )
+    Pylon1.collision = onCollision
+    Pylon1:addEventListener( "collision" )
+    Pylon2.collision = onCollision
+    Pylon2:addEventListener( "collision" )
+    Pylon3.collision = onCollision
+    Pylon3:addEventListener( "collision" )
 
 end
 
 local function RemoveCollisionListeners()
 
-    Plyon1:removeEventListener( "collision" )
-    Plyon2:removeEventListener( "collision" )
-    Plyon3:removeEventListener( "collision" )
+    Pylon1:removeEventListener( "collision" )
+    Pylon2:removeEventListener( "collision" )
+    Pylon3:removeEventListener( "collision" )
 
 end
 --]]
@@ -276,6 +278,12 @@ local function AddPhysicsBodies()
     physics.addBody( rightW, "static", {density=1, friction=0.3, bounce=0.2} )
     physics.addBody( topW, "static", {density=1, friction=0.3, bounce=0.2} )
     physics.addBody( floor, "static", {density=1, friction=0.3, bounce=0.2} )
+
+
+    physics.addBody(Pylon1, "static",  {density=0, friction=0, bounce=0} )
+    physics.addBody(Pylon2, "static",  {density=0, friction=0, bounce=0} )
+    physics.addBody(Pylon3, "static",  {density=0, friction=0, bounce=0} )
+
 
 
 end
