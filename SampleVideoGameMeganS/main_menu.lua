@@ -230,6 +230,8 @@ function scene:create( event )
             -- Set its position on the screen relative to the screen size
             x = display.contentWidth*1/8,
             y = display.contentHeight*5.25/8,
+            width = 200,
+            height = 100,
 
             -- Insert the images here
             defaultFile = "Images/CreditsButtonUnpressed.png",
@@ -238,8 +240,7 @@ function scene:create( event )
             -- When the button is released, call the Credits transition function
             onRelease = CreditsTransition
         } ) 
-        -- Set the scale for the Credits button
-        creditsButton:scale( 0.55, 0.55 )
+
  -----------------------------------------------------------------------------------------
    
     -- Creating the instructions button

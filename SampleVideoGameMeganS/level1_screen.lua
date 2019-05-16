@@ -77,7 +77,7 @@ local floor
 -- Create the car
 local Car
 
--- Create the plyon
+-- Create the pylon
 local Pylon1
 local Pylon2
 local Pylon3
@@ -160,7 +160,7 @@ local function ReplaceCar()
     AddRuntimeListeners()
 end
 
-local function MakePlyonsVisible()
+local function MakePylonsVisible()
     Pylon1.isVisible = true
     Pylon2.isVisible = true
     Pylon3.isVisible = true
@@ -220,16 +220,12 @@ local function onCollision( self, event )
             (event.target.myName == "Pylon2") or
             (event.target.myName == "Pylon3") then
 
-
             -- add sound effect here
             crashSoundChannel = audio.play(crashSound)
 
             -- remove runtime listeners that move the car
             RemoveArrowEventListeners()
             RemoveRuntimeListeners()
-
-            -- remove the car from the display
-            display.remove(Car)
 
             -- get the Pylon that the user hit
             Pylon = event.target
@@ -270,7 +266,7 @@ local function RemoveCollisionListeners()
     Pylon3:removeEventListener( "collision" )
 
 end
---]]
+
 local function AddPhysicsBodies()
     --add to the physics engine 
 
@@ -280,11 +276,9 @@ local function AddPhysicsBodies()
     physics.addBody( floor, "static", {density=1, friction=0.3, bounce=0.2} )
 
 
-    physics.addBody(Pylon1, "static",  {density=0, friction=0, bounce=0} )
-    physics.addBody(Pylon2, "static",  {density=0, friction=0, bounce=0} )
-    physics.addBody(Pylon3, "static",  {density=0, friction=0, bounce=0} )
-
-
+    physics.addBody( Pylon1, "static",  {density=0, friction=0, bounce=0} )
+    physics.addBody( Pylon2, "static",  {density=0, friction=0, bounce=0} )
+    physics.addBody( Pylon3, "static",  {density=0, friction=0, bounce=0} )
 
 end
 
@@ -353,7 +347,7 @@ function scene:create( event )
 
 
     -- Create the clock text colour and text
-    clockText = display.newText("Time Left:", display.contentWidth*3.3/5, display.contentHeight*2.2/10, nil, 60)
+    clockText = display.newText("Time Left: ", display.contentWidth*3.3/5, display.contentHeight*2.2/10, nil, 60)
     clockText:setTextColor(0, 0, 0)
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene
@@ -540,14 +534,15 @@ function scene:show( event )
 
         -- Start the timer
 
-        StartTimer()
+--        StartTimer()
+
         -- Keep count of the lives and questions answered
 
         numLives = 5
         questionsAnswered = 0
 
-        -- make all of the plyons visible
---        MakePlyonsVisible()
+        -- make all of the pylons visible
+        MakePylonsVisible()
 
         -- make all lives visible
         MakeHeartsVisible()
@@ -556,9 +551,9 @@ function scene:show( event )
         AddPhysicsBodies()
 
         -- add collision listeners to objects
---        AddCollisionListeners()
+        AddCollisionListeners()
 
-        -- create the character, add physics bodies and runtime listeners
+        -- create the car, add physics bodies and runtime listeners
         ReplaceCar()
 
     end
@@ -585,13 +580,11 @@ function scene:hide( event )
 
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
---        RemoveCollisionListeners()
+        RemoveCollisionListeners()
         RemovePhysicsBodies()
-
         physics.stop()
         RemoveArrowEventListeners()
         RemoveRuntimeListeners()
-        display.remove(Car)
     end
 
 end --function scene:hide( event )
