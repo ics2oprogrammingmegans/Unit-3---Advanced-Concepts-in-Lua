@@ -172,7 +172,7 @@ local function RemoveTextListeners()
 
 end
 
-local function Answers()
+--local function Answers()
 
 local function DisplayQuestion()
 
