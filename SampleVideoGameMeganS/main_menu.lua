@@ -211,6 +211,8 @@ function scene:create( event )
             -- Set its position on the screen relative to the screen size
             x = display.contentWidth*1/8,
             y = display.contentHeight*4/8,
+            width = 200,
+            height = 100,
 
             -- Insert the images here
             defaultFile = "Images/PlayButtonUnpressed.png", 
@@ -220,8 +222,7 @@ function scene:create( event )
             onRelease = Level1ScreenTransition 
        
         } )
-    -- Set the scale for the Start button
-        startButton:scale( 0.55, 0.55 )
+
     -----------------------------------------------------------------------------------------
 
     -- Creating Credits Button
@@ -249,6 +250,8 @@ function scene:create( event )
             -- Set its position on the screen relative to the screen size
             x = display.contentWidth*1/8,
             y = display.contentHeight*6.5/8,
+            width = 200,
+            height = 100,
 
 
             -- Insert the images here
@@ -259,8 +262,7 @@ function scene:create( event )
             onRelease = InstructionTransition
         } ) 
     
-         -- Set the scale of the instructions button
-         instructionButton:scale( 0.55, 0.55 )
+
     -----------------------------------------------------------------------------------------
 
     -- Associating button widgets with this scene

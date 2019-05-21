@@ -70,8 +70,7 @@ local pentagon1
 local triangle1
 
 -- question 2 objects
-local circle2
-local rightAngleTri2
+local Tri2
 local square2
 local oval2
 
@@ -89,12 +88,6 @@ local triangle6
 
 -- question 14 objects
 local angles 
-
-
------------------------------------------------------------------------------------------
---OBJECT CREATION
------------------------------------------------------------------------------------------
---circle1 = display.newImage("Images/circle1.png", 0, 0)
 
 
 -----------------------------------------------------------------------------------------
@@ -177,11 +170,19 @@ end
 local function DisplayQuestion()
 
     -- creating random start position in a certian area
-    questionSelect = math.random(1,20)
+    questionSelect = math.random(1,4)
 
     if (questionSelect == 1) then
 
         questionText.text = display.newText("Which shape has 5 sides?", display.contentWidth*1/2, display.contentHeight*1/3, nil, 50 )
+
+        -- Display the objects
+        circle1.isVisible = true
+
+        -- Set the position of the objects
+        circle1.x = X1
+        circle1.y = Y1
+
 
     elseif (questionSelect == 2) then
 
@@ -194,6 +195,11 @@ local function DisplayQuestion()
     elseif (questionSelect == 4) then
 
         questionText.text = display.newText(" A circle is a polygon.", display.contentWidth*1/2, display.contentHeight*1/3, nil, 50 )
+
+            -- Display the text objects 
+           textObject.isVisible = true
+           textObject2.isVisible = true
+--[[
 
     elseif (questionSelect == 5) then
 
@@ -258,7 +264,7 @@ local function DisplayQuestion()
     elseif (questionSelect == 20) then
 
         questionText.text = display.newText( " How many vertices does an octagon have? ", display.contentWidth*1/2, display.contentHeight*1/3, nil, 50 )
-
+--]]
     end
 end
 
@@ -347,6 +353,31 @@ function scene:create( event )
     wrongText2.anchorX = 0
     wrongText3 = display.newText("", X2, Y1, Arial, 75)
     wrongText3.anchorX = 0
+
+    -- Question 1 --
+
+    circle1 = display.newImage("Images/CircleMeganS@2x.png", 0, 0)
+    circle1.isVisible = false
+
+
+    rectangle1 = display.newImage("Images/RectangleMeganS.png", 0, 0)
+    rectangle1.isVisible = false
+
+    -- Question 4 --
+
+    -- Create the text for the true and false questions
+    textObject = display.newText("True", 0, 0, nil, 50)
+    textObject.x = display.contentWidth/2
+    textObject.y = display.contentHeight/3
+    textObject:setTextColor (1, 1, 0)
+    textObject.isVisible = false
+
+    textObject2 = display.newText("False", 0, 0, nil, 50)
+    textObject2.x = display.contentWidth/3
+    textObject2.y = display.contentHeight/3
+    textObject2:setTextColor (1, 1, 0)
+    textObject2.isVisible = false
+
     -----------------------------------------------------------------------------------------
 
     -- insert all objects for this scene into the scene group
@@ -443,26 +474,3 @@ scene:addEventListener( "destroy", scene )
 -----------------------------------------------------------------------------------------
 
 return scene
-
-
---[[
-
-    -- calculate answer
-    answer = firstNumber + secondNumber
-
-    -- calculate wrong answers
-    wrongAnswer1 = answer + math.random(1, 3)
-    wrongAnswer2 = answer + math.random(4, 6)
-    wrongAnswer3 = answer + math.random(7, 9)
-
-    --creating the question depending on the selcetion number
-    questionText.text = firstNumber .. " + " .. secondNumber .. " = "
-
-    --creating answer text from list it corrospondes with the animals list
-    answerText.text = answer
-    
-    --creating wrong answers
-    wrongText1.text = wrongAnswer1
-    wrongText2.text = wrongAnswer2
-    wrongText3.text = wrongAnswer3
-    --]]
