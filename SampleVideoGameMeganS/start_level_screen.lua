@@ -30,9 +30,12 @@ local CrashSoundChannel
 -- LOCAL VARIABLES
 -----------------------------------------------------------------------------------------
  
--- The local variable for the Platelogo
-local Platelogo 
-local scrollSpeedPlatelogo = -9
+-- Create the background image
+local bkg
+local stopLight
+local red
+local yellow
+local green
 
 --------------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
@@ -70,12 +73,9 @@ function scene:create( event )
     display.setStatusBar(display.HiddenStatusBar)
 
     -- Set the background to be black
-    display.setDefault( "background", 1, 1, 1  ) 
+    display.setDefault( "background", 0, 0, 0  ) 
 
-    Platelogo = display.newImage("Images/CompanyLogo.png", 50, 50 )
 
-    -- Set the scale of the logo
-    Platelogo:scale(0.25, 0.25)
 
     -- Set the initial x and y position of the Platelogo
     Platelogo.x = display.contentWidth/2

@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------------------
 --
 -- main.lua
--- Created by: Your Name
+-- Created by: Megan.S
 -- Date: Month Day, Year
 -- Description: This calls the splash screen of the app to load itself.
 -----------------------------------------------------------------------------------------
